@@ -12,9 +12,10 @@ export default defineConfig({
         },
     },
     build: {
+        emptyOutDir: false,
         lib: {
             entry: resolve(__dirname, 'src/index.ts'),
-            name: 'HervalReactCore',
+            name: 'ReactCore',
             formats: ['es', 'cjs'],
             fileName: (format) => `index.${format === 'es' ? 'js' : 'cjs'}`
         },
@@ -23,32 +24,17 @@ export default defineConfig({
                 'react',
                 'react-dom',
                 'react-router-dom',
-                '@tanstack/react-query',
-                /^react\/.*/,
-                /^react-dom\/.*/,
                 /^@radix-ui\/.*/,
                 'lucide-react',
-                'next-themes',
                 'oidc-client',
-                'axios',
                 'framer-motion',
                 'sonner',
                 'vaul',
-                'zod',
-                'date-fns',
-                'react-hook-form',
-                '@hookform/resolvers',
                 'react-error-boundary',
-                'react-day-picker'
-            ],
-            output: {
-                globals: {
-                    react: 'React',
-                    'react-dom': 'ReactDOM',
-                    'react-router-dom': 'ReactRouterDOM',
-                    '@tanstack/react-query': 'ReactQuery'
-                }
-            }
+                'react-day-picker',
+                'clsx',
+                'tailwind-merge'
+            ]
         }
     }
 })

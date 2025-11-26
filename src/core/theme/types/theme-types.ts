@@ -1,11 +1,22 @@
-export type ThemeColor = "herval" | "taqi" | "iplace"
+export type ThemeName = "herval" | "taqi" | "iplace"
 export type ThemeMode = "light" | "dark"
 
 export interface ThemeConfig {
-    color: ThemeColor
+    name: ThemeName
     mode: ThemeMode
 }
 
+/**
+ * ThemeColors - Apenas cores específicas de cada tema
+ * 
+ * Cores neutras (background, foreground, secondary, muted, accent, destructive, borders)
+ * são definidas no global.css e aplicadas via CSS variables.
+ * 
+ * Este tipo define apenas as cores que mudam entre temas:
+ * - primary/primary-foreground: Cor da marca
+ * - ring: Cor de foco
+ * - sidebar-primary/sidebar-primary-foreground/sidebar-ring: Aplicação na sidebar
+ */
 export interface ThemeColors {
     primary: string
     "primary-foreground": string

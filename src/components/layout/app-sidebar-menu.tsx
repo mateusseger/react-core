@@ -90,7 +90,7 @@ export function AppSidebarMenu({ menuItems: allMenuItems, projectConfig }: AppSi
         },
     }
 
-    const currentLogo = projectConfig.logo || logos[theme.color][theme.mode]
+    const currentLogo = projectConfig.logo || logos[theme.name][theme.mode]
 
     return (
         <>

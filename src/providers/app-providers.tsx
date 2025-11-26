@@ -2,7 +2,6 @@
 // Refatorado para aceitar configurações via props
 
 import { type ReactNode } from "react"
-import { QueryClientProvider, type QueryClient } from "@tanstack/react-query"
 import { ErrorBoundary, type FallbackProps } from "react-error-boundary"
 import { AuthContextProvider, type AuthConfig } from "@/core/auth"
 import { ThemeProvider } from "@/core/theme"
@@ -75,24 +74,20 @@ function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
 export interface AppProvidersProps {
     children: ReactNode
     authConfig: AuthConfig
-    queryClient: QueryClient
     devMode?: boolean
 }
 
 export function AppProviders({
     children,
     authConfig,
-    queryClient,
     devMode = false
 }: AppProvidersProps) {
     return (
         <ErrorBoundary FallbackComponent={ErrorFallback}>
             <ThemeProvider>
-                <QueryClientProvider client={queryClient}>
-                    <AuthContextProvider config={authConfig} devMode={devMode}>
-                        {children}
-                    </AuthContextProvider>
-                </QueryClientProvider>
+                <AuthContextProvider config={authConfig} devMode={devMode}>
+                    {children}
+                </AuthContextProvider>
             </ThemeProvider>
         </ErrorBoundary>
     )

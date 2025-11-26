@@ -6,7 +6,6 @@
 
 import { UserManager, type UserManagerSettings, WebStorageStateStore } from "oidc-client"
 import type { IUser, AuthConfig } from "../types/auth-types"
-import { logger } from "@/utils/logger"
 import { createMockUser } from "./auth-mock"
 import { enrichUser } from "./auth-enrichment"
 
@@ -63,7 +62,7 @@ export function initAuthService(config: AuthConfig, devMode = false): void {
 function ensureInitialized(): void {
     if (!authConfig) {
         const error = "Service not initialized. Call initAuthService(config) first."
-        logger.error(error)
+        console.error(error)
         throw new Error(`[AuthService] ${error}`)
     }
 }
@@ -72,7 +71,7 @@ function getUserManager(): UserManager {
     ensureInitialized()
     if (!userManager) {
         const error = "UserManager not available in dev mode"
-        logger.error(error)
+        console.error(error)
         throw new Error(`[AuthService] ${error}`)
     }
     return userManager
@@ -116,7 +115,7 @@ export async function getUser(): Promise<IUser | null> {
 
         return enrichUser(user, CLIENT_ID)
     } catch (error) {
-        logger.error("Failed to get user", error)
+        console.error("Failed to get user", error)
         return null
     }
 }
@@ -159,7 +158,7 @@ export async function login(): Promise<void> {
         const manager = getUserManager()
         await manager.signinRedirect()
     } catch (error) {
-        logger.error("Login failed", error)
+        console.error("Login failed", error)
         throw new Error("Failed to initiate login")
     }
 }
@@ -204,7 +203,7 @@ export async function handleCallback(): Promise<IUser | null> {
 
         return enrichedUser
     } catch (error) {
-        logger.error("Authentication callback failed", error)
+        console.error("Authentication callback failed", error)
         throw new Error("Failed to process authentication callback")
     }
 }
@@ -236,13 +235,13 @@ export async function logout(): Promise<void> {
         localStorage.clear()
         sessionStorage.clear()
     } catch (error) {
-        logger.error("Logout failed, attempting fallback", error)
+        console.error("Logout failed, attempting fallback", error)
 
         try {
             const manager = getUserManager()
             await manager.removeUser()
         } catch (e) {
-            logger.error("Failed to remove user", e)
+            console.error("Failed to remove user", e)
         }
 
         localStorage.clear()
@@ -301,7 +300,7 @@ export async function renewToken(): Promise<IUser | null> {
         const user = await manager.signinSilent()
         return enrichUser(user, CLIENT_ID)
     } catch (error) {
-        logger.error("Token renewal failed", error)
+        console.error("Token renewal failed", error)
         return null
     }
 }

@@ -24,7 +24,6 @@ export * from "./hooks"
 
 // ==================== UTILS ====================
 export * from "./utils"
-export { logger, type LogLevel, type LoggerConfig } from "./utils/logger"
 
 // ==================== TYPES ====================
 export * from "./types"

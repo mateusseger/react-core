@@ -13,14 +13,13 @@ npm install @herval/react-core
 ### 1. Instalar dependências peer
 
 ```bash
-npm install react react-dom react-router-dom @tanstack/react-query
+npm install react react-dom react-router-dom
 ```
 
 ### 2. Configurar a aplicação
 
 ```typescript
 // src/config/app-config.ts
-import { QueryClient } from '@tanstack/react-query'
 import { Home, Settings, Users } from 'lucide-react'
 import type { AppConfig } from '@herval/react-core'
 

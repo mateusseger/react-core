@@ -1,23 +1,18 @@
-import type { Theme } from "../types/theme-types"
-
-export type ThemeName = "herval" | "taqi" | "iplace"
+import type { Theme, ThemeName } from "../types/theme-types"
 
 /**
- * Estrutura de Temas Corporativos
+ * Sistema de Temas - Apenas Cores Específicas
  * 
- * Cada tema segue a mesma estrutura de cores, diferenciando-se APENAS por:
+ * Cores neutras (background, foreground, secondary, muted, accent, destructive, borders)
+ * são definidas no global.css e compartilhadas entre todos os temas.
+ * 
+ * Aqui mantemos APENAS as cores que mudam por tema:
  * - Primary: Cor principal da marca (Herval: vermelho, Taqi: laranja, iPlace: verde-limão)
- * - Ring: Cor de foco/destaque (geralmente igual ao primary)
- * 
- * Cores compartilhadas entre todos os temas:
- * - Base: background, foreground, card, popover (neutros clean)
- * - Secondary/Muted/Accent: Cinzas e tons sutis padronizados
- * - Destructive: Vermelho de erro padrão (#ef4444 light, #dc2626 dark)
- * - Borders/Inputs: Cinzas discretos
- * - Sidebar: Variações das cores base com primary aplicado
- * 
- * Esta consistência garante que ao trocar de tema, apenas elementos com cor
- * primária mudam, mantendo toda interface visual idêntica.
+ * - Primary-foreground: Contraste sobre a cor primária
+ * - Ring: Cor de foco (sempre igual ao primary)
+ * - Sidebar-primary: Aplicação do primary na sidebar
+ * - Sidebar-primary-foreground: Contraste do primary na sidebar
+ * - Sidebar-ring: Ring na sidebar (sempre igual ao primary)
  */
 export const THEMES: Record<ThemeName, Theme> = {
     herval: {
@@ -200,35 +195,4 @@ export const THEMES: Record<ThemeName, Theme> = {
             "sidebar-ring": "#c6d30d",
         },
     },
-}
-
-export const THEME_METADATA: Record<ThemeName, {
-    name: string
-    description: string
-    characteristics: string[]
-}> = {
-    herval: {
-        name: "Herval",
-        description: "Clean e minimalista com destaque corporativo",
-        characteristics: ["Minimalista", "Corporativo", "Elegante"],
-    },
-    taqi: {
-        name: "Taqi",
-        description: "Neutro e moderno com toque energético",
-        characteristics: ["Clean", "Moderno", "Sofisticado"],
-    },
-    iplace: {
-        name: "iPlace",
-        description: "Design tech com contraste vibrante",
-        characteristics: ["Tech", "Vibrante", "Contemporâneo"],
-    },
-}
-
-
-export function getTheme(name: ThemeName): Theme {
-    return THEMES[name]
-}
-
-export function getThemePrimaryColor(name: ThemeName): string {
-    return THEMES[name].light.primary
 }

@@ -1,51 +1,48 @@
 import { createContext, useEffect, useState, type ReactNode } from "react"
-import type { ThemeColor, ThemeMode, ThemeConfig } from "../types/theme-types"
+import type { ThemeMode, ThemeConfig, ThemeName } from "../types/theme-types"
 import { THEMES } from "../config/theme-config"
 
-interface ThemeContextType {
+export interface ThemeContextType {
     theme: ThemeConfig
-    setThemeColor: (color: ThemeColor) => void
+    setThemeName: (name: ThemeName) => void
     setThemeMode: (mode: ThemeMode) => void
     toggleMode: () => void
 }
 
 export const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
-const THEME_COLOR_KEY = "theme-color"
+const THEME_NAME_KEY = "theme-name"
 const THEME_MODE_KEY = "theme-mode"
 
-function getDefaultThemeColor(): ThemeColor {
+function getDefaultThemeName(): ThemeName {
     // Prioriza localStorage sobre .env para preservar escolha do usuário
-    const stored = localStorage.getItem(THEME_COLOR_KEY)
-    if (stored && (stored === "herval" || stored === "taqi" || stored === "iplace")) {
-        return stored as ThemeColor
+    const stored: string | null = localStorage.getItem(THEME_NAME_KEY)
+    if (stored && stored in THEMES) {
+        return stored as ThemeName
     }
 
     // Fallback para tema do .env
-    const envTheme = import.meta.env.VITE_APP_THEME as ThemeColor | undefined
-    if (envTheme && (envTheme === "herval" || envTheme === "taqi" || envTheme === "iplace")) {
-        return envTheme
+    const envTheme: string | undefined = import.meta.env.VITE_APP_THEME
+    if (envTheme && envTheme in THEMES) {
+        return envTheme as ThemeName
     }
 
-    return "herval"
+    // Fallback para o primeiro tema disponível
+    return Object.keys(THEMES)[0] as ThemeName
 }
 
 function getDefaultThemeMode(): ThemeMode {
-    const stored = localStorage.getItem(THEME_MODE_KEY)
+    const stored: string | null = localStorage.getItem(THEME_MODE_KEY)
     if (stored && (stored === "light" || stored === "dark")) {
         return stored as ThemeMode
-    }
-
-    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-        return "dark"
     }
 
     return "light"
 }
 
-function applyTheme(color: ThemeColor, mode: ThemeMode) {
+function applyTheme(name: ThemeName, mode: ThemeMode) {
     const root = document.documentElement
-    const themeColors = THEMES[color][mode]
+    const themeColors = THEMES[name][mode]
 
     root.classList.remove("light", "dark")
     root.classList.add(mode)
@@ -57,18 +54,18 @@ function applyTheme(color: ThemeColor, mode: ThemeMode) {
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
     const [theme, setTheme] = useState<ThemeConfig>({
-        color: getDefaultThemeColor(),
+        name: getDefaultThemeName(),
         mode: getDefaultThemeMode(),
     })
 
     useEffect(() => {
-        applyTheme(theme.color, theme.mode)
-        localStorage.setItem(THEME_COLOR_KEY, theme.color)
+        applyTheme(theme.name, theme.mode)
+        localStorage.setItem(THEME_NAME_KEY, theme.name)
         localStorage.setItem(THEME_MODE_KEY, theme.mode)
     }, [theme])
 
-    const setThemeColor = (color: ThemeColor) => {
-        setTheme((prev) => ({ ...prev, color }))
+    const setThemeName = (name: ThemeName) => {
+        setTheme((prev) => ({ ...prev, name }))
     }
 
     const setThemeMode = (mode: ThemeMode) => {
@@ -86,7 +83,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         <ThemeContext.Provider
             value={{
                 theme,
-                setThemeColor,
+                setThemeName,
                 setThemeMode,
                 toggleMode,
             }}

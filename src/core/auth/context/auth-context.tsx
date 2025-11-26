@@ -4,7 +4,6 @@
 import { createContext, type ReactNode, useEffect, useState, useCallback } from "react"
 import { getUser, login, logout as authLogout, PUBLIC_ROUTES, initAuthService } from "../services/auth-service"
 import type { IUser, AuthConfig } from "../types/auth-types"
-import { logger } from "@/utils/logger"
 
 export type AuthContextType = {
     user: IUser | null
@@ -48,7 +47,7 @@ export function AuthContextProvider({ children, config, devMode = false }: AuthC
                 setIsAuthenticated(false)
             }
         } catch (error) {
-            logger.error("Failed to refresh user", error)
+            console.error("Failed to refresh user", error)
             setUser(null)
             setIsAuthenticated(false)
         }
@@ -60,7 +59,7 @@ export function AuthContextProvider({ children, config, devMode = false }: AuthC
             setUser(null)
             setIsAuthenticated(false)
         } catch (error) {
-            logger.error("Logout error", error)
+            console.error("Logout error", error)
             setUser(null)
             setIsAuthenticated(false)
             window.location.href = "/"
@@ -88,14 +87,14 @@ export function AuthContextProvider({ children, config, devMode = false }: AuthC
                     await login()
                 }
             } catch (error) {
-                logger.error("Auth initialization failed", error)
+                console.error("Auth initialization failed", error)
 
                 if (!isMounted) return
 
                 try {
                     await login()
                 } catch (loginError) {
-                    logger.error("Login failed", loginError)
+                    console.error("Login failed", loginError)
                 }
             } finally {
                 if (isMounted) {

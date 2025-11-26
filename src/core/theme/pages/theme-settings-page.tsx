@@ -5,7 +5,8 @@ import { Badge } from "@/components/ui/shadcn/badge"
 import { useTheme } from "@/core/theme/hooks/use-theme"
 import { Sun, Moon, Check, Layers } from "lucide-react"
 import { motion } from "framer-motion"
-import { THEMES, THEME_METADATA, type ThemeName } from "@/core/theme/config/theme-config"
+import { THEMES } from "@/core/theme/config/theme-config"
+import type { ThemeName } from "@/core/theme/types/theme-types"
 import logoHervalDark from "@/assets/logos/logo-herval-dark.png"
 import logoHervalLight from "@/assets/logos/logo-herval-light.png"
 import logoIplaceDark from "@/assets/logos/logo-iplace-dark.svg"
@@ -13,22 +14,27 @@ import logoIplaceLight from "@/assets/logos/logo-iplace-light.svg"
 import logoTaqiDark from "@/assets/logos/logo-taqi-dark.svg"
 import logoTaqiLight from "@/assets/logos/logo-taqi-light.svg"
 
+// Cores neutras compartilhadas (definidas no global.css)
+const NEUTRAL_COLORS = {
+    secondary: "#f5f5f5",
+    accent: "#fafafa",
+    muted: "#fafafa",
+}
+
 // Gera as opções de tema dinamicamente a partir do theme-config
 const THEME_OPTIONS = (Object.keys(THEMES) as ThemeName[]).map((themeId) => ({
     id: themeId,
-    name: THEME_METADATA[themeId].name,
-    description: THEME_METADATA[themeId].description,
+    name: themeId,
     palette: {
         primary: THEMES[themeId].light.primary,
-        secondary: THEMES[themeId].light.secondary,
-        accent: THEMES[themeId].light.accent,
-        muted: THEMES[themeId].light.muted,
+        secondary: NEUTRAL_COLORS.secondary,
+        accent: NEUTRAL_COLORS.accent,
+        muted: NEUTRAL_COLORS.muted,
     },
-    characteristics: THEME_METADATA[themeId].characteristics,
 }))
 
 export function ThemeSettingsPage() {
-    const { theme, setThemeColor, setThemeMode } = useTheme()
+    const { theme, setThemeName: setThemeColor, setThemeMode } = useTheme()
 
     const handleThemeChange = (themeId: ThemeName) => {
         setThemeColor(themeId)
@@ -107,7 +113,7 @@ export function ThemeSettingsPage() {
                                 <motion.button
                                     key={themeOption.id}
                                     onClick={() => handleThemeChange(themeOption.id)}
-                                    className={`relative p-4 rounded-lg border-2 transition-all text-left ${theme.color === themeOption.id
+                                    className={`relative p-4 rounded-lg border-2 transition-all text-left ${theme.name === themeOption.id
                                         ? "border-primary bg-primary/5"
                                         : "border-border hover:border-primary/50 hover:bg-accent"
                                         }`}
@@ -124,18 +130,13 @@ export function ThemeSettingsPage() {
                                             />
                                             <p className="text-md font-bold">{themeOption.name}</p>
                                         </div>
-                                        {theme.color === themeOption.id && (
+                                        {theme.name === themeOption.id && (
                                             <Badge variant="default" className="text-xs">
                                                 <Check className="h-3 w-3 mr-1" />
                                                 Ativo
                                             </Badge>
                                         )}
                                     </div>
-
-                                    {/* Descrição */}
-                                    <p className="text-sm text-muted-foreground mb-3">
-                                        {themeOption.description}
-                                    </p>
 
                                     {/* Paleta de cores */}
                                     <div className="flex gap-2 mb-3">
@@ -159,15 +160,6 @@ export function ThemeSettingsPage() {
                                             style={{ backgroundColor: themeOption.palette.muted }}
                                             title="Muted"
                                         />
-                                    </div>
-
-                                    {/* Características */}
-                                    <div className="flex flex-wrap gap-1">
-                                        {themeOption.characteristics.map((char) => (
-                                            <Badge key={char} variant="secondary" className="text-xs">
-                                                {char}
-                                            </Badge>
-                                        ))}
                                     </div>
                                 </motion.button>
                             ))}
@@ -201,7 +193,7 @@ export function ThemeSettingsPage() {
                                     Tema Ativo
                                 </span>
                                 <Badge variant="secondary" className="font-semibold">
-                                    {THEME_OPTIONS.find((t) => t.id === theme.color)?.name}
+                                    {THEME_OPTIONS.find((t) => t.id === theme.name)?.name}
                                 </Badge>
                             </div>
                             <div className="p-3 rounded-lg bg-muted/50 border">
@@ -224,7 +216,7 @@ export function ThemeSettingsPage() {
                                     { label: "Accent", key: "accent" as const },
                                     { label: "Muted", key: "muted" as const },
                                 ].map((color) => {
-                                    const currentTheme = THEME_OPTIONS.find((t) => t.id === theme.color)
+                                    const currentTheme = THEME_OPTIONS.find((t) => t.id === theme.name)
                                     const colorValue = currentTheme?.palette[color.key]
                                     return (
                                         <div
@@ -244,20 +236,6 @@ export function ThemeSettingsPage() {
                                         </div>
                                     )
                                 })}
-                            </div>
-                        </div>
-
-                        {/* Características */}
-                        <div className="p-3 rounded-lg bg-muted/50 border">
-                            <span className="text-xs font-medium text-muted-foreground block mb-2">
-                                Características
-                            </span>
-                            <div className="flex flex-wrap gap-1">
-                                {THEME_OPTIONS.find((t) => t.id === theme.color)?.characteristics.map((char) => (
-                                    <Badge key={char} variant="outline" className="text-xs">
-                                        {char}
-                                    </Badge>
-                                ))}
                             </div>
                         </div>
                     </div>

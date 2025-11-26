@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/shadcn/button"
 import { useAuth } from "@/core/auth"
 import { LogOut } from "lucide-react"
-import { logger } from "@/utils/logger"
 import { AppBreadcrumb } from "./app-breadcrumb"
 import { Avatar, AvatarFallback } from "@/components/ui/shadcn/avatar"
 import {
@@ -31,7 +30,7 @@ export function AppHeader() {
         try {
             await logout()
         } catch (error) {
-            logger.error("Logout failed", error)
+            console.error("Logout failed", error)
         }
     }
 

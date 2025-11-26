@@ -1,6 +1,5 @@
 import { type LucideIcon } from "lucide-react"
-import { type QueryClient } from "@tanstack/react-query"
-import type { AuthConfig } from "@/core/auth"
+import { type AuthConfig } from "@/core/auth"
 
 // ==================== PROJECT CONFIG ====================
 export interface ProjectConfig {
@@ -31,7 +30,6 @@ export interface AppConfig {
     auth: AuthConfig
     project: ProjectConfig
     menu: MenuItem[]
-    queryClient: QueryClient
 }
 
 // Re-export AuthConfig for convenience
