@@ -1,29 +1,20 @@
-// @herval/react-core - Main export file
-// Biblioteca React base com layout, UI, autenticação e temas
+// STYLES
+import "./global.css"
 
-// ==================== STYLES ====================
-import "./styles/global.css"
+// FEATURES
+export * from "./features/auth"
+export * from "./features/temas"
+export * from "./features/erros"
 
-// ==================== CORE MODULES ====================
-export * from "./core/auth"
-export * from "./core/theme"
-export * from "./core/errors"
+// COMPONENTS
+export * from "./shared/components/layout"
+export * from "./shared/components/ui"
 
-// ==================== COMPONENTS ====================
-export * from "./components/layout"
-export * from "./components/ui"
+// HOOKS
+export * from "./shared/hooks"
 
-// ==================== PROVIDERS ====================
-export * from "./providers"
+// UTILS
+export * from "./shared/utils"
 
-// ==================== CONTEXT ====================
-export * from "./context"
-
-// ==================== HOOKS ====================
-export * from "./hooks"
-
-// ==================== UTILS ====================
-export * from "./utils"
-
-// ==================== TYPES ====================
-export * from "./types"
+// TYPES
+export * from "./shared/types"
