@@ -19,10 +19,8 @@
         "README.md"
     ],
     "scripts": {
-        "dev": "vite",
         "build": "tsc -p tsconfig.app.json && vite build",
-        "dev:demo": "cd demo && npm run dev",
-        "preview": "vite preview"
+        "dev": "cd ..\react-template && npm run dev",
     },
     "peerDependencies": {
         "@radix-ui/react-avatar": "^1.1.11",
