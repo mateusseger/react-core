@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState, type ReactNode } from "react"
 import type { ThemeMode, ThemeConfig, ThemeName } from "../types/theme-types"
-import { THEMES } from "../config/theme-config"
+import { isValidTheme, DEFAULT_THEME } from "../config/themes-config"
 
 export interface ThemeContextType {
     theme: ThemeConfig
@@ -16,40 +16,39 @@ const THEME_MODE_KEY = "theme-mode"
 
 function getDefaultThemeName(): ThemeName {
     // Prioriza localStorage sobre .env para preservar escolha do usuário
-    const stored: string | null = localStorage.getItem(THEME_NAME_KEY)
-    if (stored && stored in THEMES) {
-        return stored as ThemeName
+    const stored = localStorage.getItem(THEME_NAME_KEY)
+    if (isValidTheme(stored)) {
+        return stored
     }
 
     // Fallback para tema do .env
-    const envTheme: string | undefined = import.meta.env.VITE_APP_THEME
-    if (envTheme && envTheme in THEMES) {
-        return envTheme as ThemeName
+    const envTheme = import.meta.env.VITE_APP_THEME
+    if (isValidTheme(envTheme)) {
+        return envTheme
     }
 
-    // Fallback para o primeiro tema disponível
-    return Object.keys(THEMES)[0] as ThemeName
+    // Fallback para tema padrão
+    return DEFAULT_THEME
 }
 
 function getDefaultThemeMode(): ThemeMode {
-    const stored: string | null = localStorage.getItem(THEME_MODE_KEY)
-    if (stored && (stored === "light" || stored === "dark")) {
+    const stored = localStorage.getItem(THEME_MODE_KEY)
+    if (stored === "light" || stored === "dark") {
         return stored as ThemeMode
     }
-
     return "light"
 }
 
 function applyTheme(name: ThemeName, mode: ThemeMode) {
     const root = document.documentElement
-    const themeColors = THEMES[name][mode]
 
+    // Remove classes anteriores
     root.classList.remove("light", "dark")
-    root.classList.add(mode)
+    root.removeAttribute("data-theme")
 
-    Object.entries(themeColors).forEach(([key, value]) => {
-        root.style.setProperty(`--color-${key}`, value)
-    })
+    // Aplica novas classes
+    root.classList.add(mode)
+    root.setAttribute("data-theme", name)
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {

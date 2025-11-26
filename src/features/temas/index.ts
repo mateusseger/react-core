@@ -1,11 +1,10 @@
 /**
  * Theme System
- * Sistema de temas com suporte a herval, taqi, iplace
+ * Para adicionar um novo tema: edite config/themes-config.ts e styles/themes.css
  */
 
 export { ThemeProvider } from "./context/theme-provider"
 export { useTheme } from "./hooks/use-theme"
-export { THEMES } from "./config/theme-config"
-export type { Theme, ThemeColors, ThemeConfig, ThemeMode, ThemeName } from "./types/theme-types"
-// Routes
+export { THEMES, DEFAULT_THEME, isValidTheme } from "./config/themes-config"
+export type { ThemeConfig, ThemeMode, ThemeName } from "./types/theme-types"
 export { themeRoutes } from "./routes"

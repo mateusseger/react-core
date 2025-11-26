@@ -3,35 +3,15 @@ import { Label } from "@/shared/components/ui/shadcn/label"
 import { Switch } from "@/shared/components/ui/shadcn/switch"
 import { Badge } from "@/shared/components/ui/shadcn/badge"
 import { useTheme } from "@/features/temas/hooks/use-theme"
-import { Sun, Moon, Check, Layers } from "lucide-react"
+import { Sun, Moon, Check, Layers, Code } from "lucide-react"
 import { motion } from "framer-motion"
-import { THEMES } from "@/features/temas/config/theme-config"
-import type { ThemeName } from "@/features/temas/types/theme-types"
+import { THEMES, type ThemeName } from "@/features/temas/config/themes-config"
 import logoHervalDark from "@/shared/assets/logos/herval-dark.png"
 import logoHervalLight from "@/shared/assets/logos/herval-light.png"
 import logoIplaceDark from "@/shared/assets/logos/iplace-dark.svg"
 import logoIplaceLight from "@/shared/assets/logos/iplace-light.svg"
 import logoTaqiDark from "@/shared/assets/logos/taqi-dark.svg"
 import logoTaqiLight from "@/shared/assets/logos/taqi-light.svg"
-
-// Cores neutras compartilhadas (definidas no global.css)
-const NEUTRAL_COLORS = {
-    secondary: "#f5f5f5",
-    accent: "#fafafa",
-    muted: "#fafafa",
-}
-
-// Gera as opções de tema dinamicamente a partir do theme-config
-const THEME_OPTIONS = (Object.keys(THEMES) as ThemeName[]).map((themeId) => ({
-    id: themeId,
-    name: themeId,
-    palette: {
-        primary: THEMES[themeId].light.primary,
-        secondary: NEUTRAL_COLORS.secondary,
-        accent: NEUTRAL_COLORS.accent,
-        muted: NEUTRAL_COLORS.muted,
-    },
-}))
 
 export function ThemeSettingsPage() {
     const { theme, setThemeName: setThemeColor, setThemeMode } = useTheme()
@@ -109,7 +89,7 @@ export function ThemeSettingsPage() {
                             Tema de Cores
                         </Label>
                         <div className="grid gap-4 md:grid-cols-3">
-                            {THEME_OPTIONS.map((themeOption) => (
+                            {THEMES.map((themeOption) => (
                                 <motion.button
                                     key={themeOption.id}
                                     onClick={() => handleThemeChange(themeOption.id)}
@@ -138,27 +118,12 @@ export function ThemeSettingsPage() {
                                         )}
                                     </div>
 
-                                    {/* Paleta de cores */}
+                                    {/* Cor primária do tema */}
                                     <div className="flex gap-2 mb-3">
                                         <div
-                                            className="h-8 w-8 rounded-md border border-border/50 shadow-sm"
-                                            style={{ backgroundColor: themeOption.palette.primary }}
-                                            title="Primary"
-                                        />
-                                        <div
-                                            className="h-8 w-8 rounded-md border border-border/50 shadow-sm"
-                                            style={{ backgroundColor: themeOption.palette.secondary }}
-                                            title="Secondary"
-                                        />
-                                        <div
-                                            className="h-8 w-8 rounded-md border border-border/50 shadow-sm"
-                                            style={{ backgroundColor: themeOption.palette.accent }}
-                                            title="Accent"
-                                        />
-                                        <div
-                                            className="h-8 w-8 rounded-md border border-border/50 shadow-sm"
-                                            style={{ backgroundColor: themeOption.palette.muted }}
-                                            title="Muted"
+                                            className="h-8 w-full rounded-md border border-border/50 shadow-sm"
+                                            style={{ backgroundColor: themeOption.primary }}
+                                            title="Primary Color"
                                         />
                                     </div>
                                 </motion.button>
@@ -193,7 +158,7 @@ export function ThemeSettingsPage() {
                                     Tema Ativo
                                 </span>
                                 <Badge variant="secondary" className="font-semibold">
-                                    {THEME_OPTIONS.find((t) => t.id === theme.name)?.name}
+                                    {THEMES.find((t) => t.id === theme.name)?.name}
                                 </Badge>
                             </div>
                             <div className="p-3 rounded-lg bg-muted/50 border">
@@ -206,39 +171,67 @@ export function ThemeSettingsPage() {
                             </div>
                         </div>
 
-                        {/* Paleta Completa */}
+                        {/* Cor Principal */}
                         <div>
-                            <span className="text-sm font-medium block mb-3">Cores da Paleta</span>
-                            <div className="grid grid-cols-2 gap-3">
-                                {[
-                                    { label: "Primary", key: "primary" as const },
-                                    { label: "Secondary", key: "secondary" as const },
-                                    { label: "Accent", key: "accent" as const },
-                                    { label: "Muted", key: "muted" as const },
-                                ].map((color) => {
-                                    const currentTheme = THEME_OPTIONS.find((t) => t.id === theme.name)
-                                    const colorValue = currentTheme?.palette[color.key]
-                                    return (
-                                        <div
-                                            key={color.key}
-                                            className="flex items-center gap-2 p-2 rounded-lg border bg-card"
-                                        >
-                                            <div
-                                                className="h-10 w-10 rounded border shadow-sm shrink-0"
-                                                style={{ backgroundColor: colorValue }}
-                                            />
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-xs font-medium">{color.label}</p>
-                                                <code className="text-xs text-muted-foreground block truncate">
-                                                    {colorValue}
-                                                </code>
-                                            </div>
-                                        </div>
-                                    )
-                                })}
+                            <span className="text-sm font-medium block mb-3">Cor Principal</span>
+                            <div className="flex items-center gap-3 p-3 rounded-lg border bg-card">
+                                <div
+                                    className="h-12 w-12 rounded-lg border shadow-sm shrink-0"
+                                    style={{ backgroundColor: THEMES.find((t) => t.id === theme.name)?.primary }}
+                                />
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-medium">Primary</p>
+                                    <code className="text-xs text-muted-foreground block truncate">
+                                        {THEMES.find((t) => t.id === theme.name)?.primary}
+                                    </code>
+                                </div>
                             </div>
                         </div>
                     </div>
+                </CardContent>
+            </Card>
+
+            {/* Guia para Desenvolvedores */}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <Code className="h-5 w-5" />
+                        Como adicionar um novo tema
+                    </CardTitle>
+                    <CardDescription>
+                        Guia rápido para desenvolvedores
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <ol className="space-y-4 text-sm">
+                        <li className="flex gap-3">
+                            <Badge variant="outline" className="h-6 w-6 shrink-0 rounded-full p-0 flex items-center justify-center">1</Badge>
+                            <div>
+                                <p className="font-medium">Adicione no config</p>
+                                <code className="text-xs text-muted-foreground block mt-1 bg-muted px-2 py-1 rounded">
+                                    features/temas/config/themes-config.ts
+                                </code>
+                            </div>
+                        </li>
+                        <li className="flex gap-3">
+                            <Badge variant="outline" className="h-6 w-6 shrink-0 rounded-full p-0 flex items-center justify-center">2</Badge>
+                            <div>
+                                <p className="font-medium">Adicione as variáveis CSS</p>
+                                <code className="text-xs text-muted-foreground block mt-1 bg-muted px-2 py-1 rounded">
+                                    features/temas/styles/themes.css
+                                </code>
+                            </div>
+                        </li>
+                        <li className="flex gap-3">
+                            <Badge variant="outline" className="h-6 w-6 shrink-0 rounded-full p-0 flex items-center justify-center">3</Badge>
+                            <div>
+                                <p className="font-medium">(Opcional) Adicione os logos</p>
+                                <code className="text-xs text-muted-foreground block mt-1 bg-muted px-2 py-1 rounded">
+                                    shared/assets/logos/[tema]-light.svg e [tema]-dark.svg
+                                </code>
+                            </div>
+                        </li>
+                    </ol>
                 </CardContent>
             </Card>
         </div>
