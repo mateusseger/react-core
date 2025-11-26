@@ -7,12 +7,12 @@ import { Sun, Moon, Check, Layers } from "lucide-react"
 import { motion } from "framer-motion"
 import { THEMES } from "@/core/theme/config/theme-config"
 import type { ThemeName } from "@/core/theme/types/theme-types"
-import logoHervalDark from "@/assets/logos/logo-herval-dark.png"
-import logoHervalLight from "@/assets/logos/logo-herval-light.png"
-import logoIplaceDark from "@/assets/logos/logo-iplace-dark.svg"
-import logoIplaceLight from "@/assets/logos/logo-iplace-light.svg"
-import logoTaqiDark from "@/assets/logos/logo-taqi-dark.svg"
-import logoTaqiLight from "@/assets/logos/logo-taqi-light.svg"
+import logoHervalDark from "@/assets/logos/herval-dark.png"
+import logoHervalLight from "@/assets/logos/herval-light.png"
+import logoIplaceDark from "@/assets/logos/iplace-dark.svg"
+import logoIplaceLight from "@/assets/logos/iplace-light.svg"
+import logoTaqiDark from "@/assets/logos/taqi-dark.svg"
+import logoTaqiLight from "@/assets/logos/taqi-light.svg"
 
 // Cores neutras compartilhadas (definidas no global.css)
 const NEUTRAL_COLORS = {
