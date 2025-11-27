@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom"
+import { useCallback } from "react"
 import { Moon, Sun, ChevronRight } from "lucide-react"
 import {
     Sidebar,
@@ -11,11 +12,13 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
     SidebarRail,
+    useSidebar,
 } from "../ui/shadcn/sidebar"
 import { Button } from "../ui/shadcn/button"
-import { useTheme } from "@/features/temas"
+import { useTheme } from "@/features/themes"
 import { cn } from "@/shared/utils/cn"
 import { useSidebarMenu } from "@/shared/hooks/use-sidebar-menu"
+import { useBreakpoint } from "@/shared/hooks/use-breakpoint"
 import { AppSidebarSubmenu } from "./app-sidebar-submenu"
 import type { MenuItem, ProjectConfig } from "@/shared/types/config"
 import logoHervalLight from "@/shared/assets/logos/herval-light.png"
@@ -25,30 +28,6 @@ import logoTaqiDark from "@/shared/assets/logos/taqi-dark.svg"
 import logoIplaceLight from "@/shared/assets/logos/iplace-light.svg"
 import logoIplaceDark from "@/shared/assets/logos/iplace-dark.svg"
 
-/**
- * AppSidebarMenu - Barra lateral principal de navegação
- *
- * Refatorado para aceitar configuração via props.
- *
- * Arquitetura:
- * - Utiliza o hook useSidebarMenu para encapsular estado e lógica
- * - Delega a renderização de submenus ao componente AppSidebarSubmenu
- * - Publica estado do submenu via SidebarLayoutContext
- * - Foco em composição e apresentação
- *
- * Funcionalidades:
- * - Menu colapsável com ícones
- * - Suporte a submenus com painel secundário animado
- * - Alternador de tema no rodapé
- * - Estado ativo baseado na rota atual
- * - Filtragem de menu baseada em permissões (via hook)
- * - Acessibilidade completa com atributos ARIA
- * - Logo dinâmico baseado no tema ativo
- * - Nome do projeto configurável
- *
- * @param menuItems - Itens do menu de navegação
- * @param projectConfig - Configurações do projeto (nome, logo, etc)
- */
 export interface AppSidebarMenuProps {
     menuItems: MenuItem[]
     projectConfig: ProjectConfig
@@ -56,15 +35,33 @@ export interface AppSidebarMenuProps {
 
 export function AppSidebarMenu({ menuItems: allMenuItems, projectConfig }: AppSidebarMenuProps) {
     const { theme, toggleMode } = useTheme()
+    const { isMobile, setOpenMobile } = useSidebar()
     const {
         menuItems,
-        activeSubmenu,
-        isRouteActive,
-        isSubmenuOpen,
-        hasActiveSubitem,
-        handleItemClick,
+        openSubmenu,
+        currentPath,
+        getItemState,
+        toggleSubmenu,
         closeSubmenu,
     } = useSidebarMenu(allMenuItems)
+
+    // Fecha o sidebar mobile ao entrar no breakpoint md
+    const handleBreakpointEnter = useCallback(() => {
+        setOpenMobile(false)
+    }, [setOpenMobile])
+
+    useBreakpoint("md", { onEnter: handleBreakpointEnter })
+
+    // Fecha o sidebar mobile após clicar em um item de navegação
+    const handleMenuItemClick = (item: MenuItem) => {
+        toggleSubmenu(item)
+
+        // Em mobile: fecha o sidebar (tanto para itens com submenu quanto sem)
+        // Para itens com submenu, o submenu vai abrir fullscreen
+        if (isMobile) {
+            setOpenMobile(false)
+        }
+    }
 
     // Logos por tema e modo (light/dark)
     const logos = {
@@ -84,6 +81,13 @@ export function AppSidebarMenu({ menuItems: allMenuItems, projectConfig }: AppSi
 
     const currentLogo = projectConfig.logo || logos[theme.name][theme.mode]
 
+    // Fecha o sidebar mobile ao clicar no logo/título
+    const handleLogoClick = () => {
+        if (isMobile) {
+            setOpenMobile(false)
+        }
+    }
+
     return (
         <>
             {/* Barra Lateral Principal */}
@@ -91,15 +95,20 @@ export function AppSidebarMenu({ menuItems: allMenuItems, projectConfig }: AppSi
                 <SidebarHeader className="border-b p-0">
                     <Link
                         to="/"
-                        className="h-14 px-4 flex items-center gap-3 transition-all duration-200 ease-linear group-data-[collapsible=icon]:px-1 hover:bg-accent/50 cursor-pointer"
+                        onClick={handleLogoClick}
+                        className={cn(
+                            "flex items-center gap-2 sm:gap-3 transition-all duration-200 ease-linear hover:bg-accent/50 cursor-pointer",
+                            "h-12 sm:h-14 px-3 sm:px-4",
+                            "group-data-[collapsible=icon]:px-1"
+                        )}
                     >
                         <img
                             src={currentLogo}
                             alt="Logo"
-                            className="h-6 group-data-[collapsible=icon]:object-contain"
+                            className="h-5 sm:h-6 group-data-[collapsible=icon]:object-contain"
                         />
 
-                        <h1 className="text-sm font-bold group-data-[collapsible=icon]:hidden">{projectConfig.name}</h1>
+                        <h1 className="text-xs sm:text-sm font-bold group-data-[collapsible=icon]:hidden">{projectConfig.name}</h1>
                     </Link>
                 </SidebarHeader>
 
@@ -108,11 +117,7 @@ export function AppSidebarMenu({ menuItems: allMenuItems, projectConfig }: AppSi
                         <SidebarGroupContent>
                             <SidebarMenu>
                                 {menuItems.map((item) => {
-                                    const hasSubmenu = !!item.subItems?.length
-                                    const isExpanded = isSubmenuOpen(item)
-                                    const isActive = hasSubmenu
-                                        ? hasActiveSubitem(item)
-                                        : (!activeSubmenu && item.url ? isRouteActive(item.url) : false)
+                                    const { isActive, isExpanded, hasSubmenu } = getItemState(item)
 
                                     const buttonClasses = cn(
                                         "transition-all duration-200 hover:translate-x-1",
@@ -125,7 +130,7 @@ export function AppSidebarMenu({ menuItems: allMenuItems, projectConfig }: AppSi
                                         <SidebarMenuItem key={item.name}>
                                             {hasSubmenu ? (
                                                 <SidebarMenuButton
-                                                    onClick={() => handleItemClick(item)}
+                                                    onClick={() => handleMenuItemClick(item)}
                                                     tooltip={item.name}
                                                     isActive={isActive}
                                                     className={buttonClasses}
@@ -147,7 +152,7 @@ export function AppSidebarMenu({ menuItems: allMenuItems, projectConfig }: AppSi
                                                 >
                                                     <Link
                                                         to={item.url!}
-                                                        onClick={() => handleItemClick(item)}
+                                                        onClick={() => handleMenuItemClick(item)}
                                                         className={buttonClasses}
                                                     >
                                                         <item.icon className="h-4 w-4" />
@@ -164,8 +169,11 @@ export function AppSidebarMenu({ menuItems: allMenuItems, projectConfig }: AppSi
                 </SidebarContent>
 
                 <SidebarFooter className="border-t p-0">
-                    <div className="h-14 px-4 flex items-center justify-between group-data-[collapsible=icon]:justify-center">
-                        <span className="text-sm text-muted-foreground group-data-[collapsible=icon]:hidden">
+                    <div className={cn(
+                        "flex items-center justify-between group-data-[collapsible=icon]:justify-center",
+                        "h-12 sm:h-14 px-3 sm:px-4"
+                    )}>
+                        <span className="text-xs sm:text-sm text-muted-foreground group-data-[collapsible=icon]:hidden">
                             Aparência
                         </span>
                         <Button
@@ -188,8 +196,8 @@ export function AppSidebarMenu({ menuItems: allMenuItems, projectConfig }: AppSi
 
             {/* Painel Secundário de Submenu - Animado */}
             <AppSidebarSubmenu
-                parentItem={activeSubmenu}
-                isRouteActive={isRouteActive}
+                parentItem={openSubmenu}
+                currentPath={currentPath}
                 onClose={closeSubmenu}
             />
         </>

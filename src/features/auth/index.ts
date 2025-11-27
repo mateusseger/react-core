@@ -1,5 +1,3 @@
-// Barrel export para feature auth
-
 export { useAuth } from "./hooks/use-auth"
 export { useAuthorization } from "./hooks/use-authorization"
 export { AuthContext, AuthProvider } from "./context/auth-context"

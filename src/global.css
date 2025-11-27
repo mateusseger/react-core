@@ -125,4 +125,4 @@ html {
     font-family: "Inter", sans-serif;
 }
 
-@import "./features/temas/styles/themes.css";
+@import "./features/themes/styles/themes.css";

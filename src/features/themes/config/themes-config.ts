@@ -1,8 +1,3 @@
-/**
- * Configuração centralizada de temas
- * Para adicionar um novo tema: adicione aqui e no themes.css
- */
-
 export const THEMES = [
     { id: "herval", name: "Herval", primary: "#e10000" },
     { id: "taqi", name: "Taqi", primary: "#eb5c2e" },

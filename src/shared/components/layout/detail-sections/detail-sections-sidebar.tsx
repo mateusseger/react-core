@@ -6,6 +6,8 @@ import { useDetailSections } from "./detail-sections-provider"
 /**
  * DetailSectionsSidebar - Terceiro sidebar para navegação entre seções
  *
+ * Mobile First: Oculto em mobile/tablet, visível apenas em xl+
+ *
  * Renderiza uma lista de seções registradas e permite navegação por scroll suave.
  * Layout não-fixed que flui naturalmente com o conteúdo.
  *
@@ -42,8 +44,11 @@ export function DetailSectionsSidebar() {
                     }}
                     className="hidden xl:block"
                 >
-                    <div className="flex flex-col py-6 px-4 fixed h-screen w-56 border-r">
-                        <h3 className="text-sm font-semibold text-muted-foreground mb-4 px-2 whitespace-nowrap">
+                    <div className={cn(
+                        "flex flex-col fixed h-screen w-56 border-r",
+                        "py-4 sm:py-6 px-3 sm:px-4"
+                    )}>
+                        <h3 className="text-xs sm:text-sm font-semibold text-muted-foreground mb-3 sm:mb-4 px-2 whitespace-nowrap">
                             Nesta página
                         </h3>
 
@@ -58,7 +63,9 @@ export function DetailSectionsSidebar() {
                                             <button
                                                 onClick={() => scrollToSection(section.id)}
                                                 className={cn(
-                                                    "w-full text-left px-2 py-2 rounded-md text-sm transition-colors",
+                                                    "w-full text-left rounded-md transition-colors",
+                                                    "px-2 py-1.5 sm:py-2",
+                                                    "text-xs sm:text-sm",
                                                     "hover:bg-accent hover:text-accent-foreground",
                                                     "flex items-center gap-2",
                                                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
@@ -66,7 +73,7 @@ export function DetailSectionsSidebar() {
                                                 )}
                                                 aria-current={isActive ? "location" : undefined}
                                             >
-                                                {Icon && <Icon className="h-4 w-4 shrink-0" />}
+                                                {Icon && <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />}
                                                 <span className="truncate">{section.label}</span>
                                             </button>
                                         </li>

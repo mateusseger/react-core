@@ -6,15 +6,9 @@ import { SidebarProvider } from "../ui/shadcn/sidebar"
 import { DetailSectionsProvider } from "./detail-sections/detail-sections-provider"
 import { DetailSectionsSidebar } from "./detail-sections/detail-sections-sidebar"
 import { Toaster } from "../ui/shadcn/sonner"
+import { cn } from "@/shared/utils/cn"
 import type { MenuItem, ProjectConfig } from "@/shared/types/config"
 
-/**
- * Layout principal: sidebar de navegação + header + conteúdo com transições
- * Suporta sidebar terciário de seções quando habilitado via route handle
- *
- * @param menuItems - Itens do menu de navegação (obrigatório)
- * @param projectConfig - Configurações do projeto (nome, versão, logo) (obrigatório)
- */
 export interface AppLayoutProps {
     menuItems: MenuItem[]
     projectConfig: ProjectConfig
@@ -29,11 +23,15 @@ export const AppLayout = memo(function AppLayout({ menuItems, projectConfig }: A
                 <div className="flex-1 flex flex-col min-w-0">
                     <AppHeader />
 
-                    <div className="flex flex-1 min-w-0">
+                    <div className="flex flex-1 min-w-0 flex-col lg:flex-row">
                         <DetailSectionsSidebar />
 
                         <main className="flex-1 min-w-0">
-                            <div className="container mx-auto max-w-7xl p-6">
+                            <div className={cn(
+                                "container mx-auto",
+                                "p-4 sm:p-6",
+                                "max-w-full lg:max-w-7xl"
+                            )}>
                                 <AppPageTransition />
                                 <Toaster position="top-right" />
                             </div>

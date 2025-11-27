@@ -1,7 +1,3 @@
-/**
- * Tipos do sistema de temas
- */
-
 export { type ThemeName, THEMES, DEFAULT_THEME, isValidTheme } from "../config/themes-config"
 
 export type ThemeMode = "light" | "dark"

@@ -3,8 +3,8 @@ import "./global.css"
 
 // FEATURES
 export * from "./features/auth"
-export * from "./features/temas"
-export * from "./features/erros"
+export * from "./features/themes"
+export * from "./features/errors"
 
 // COMPONENTS
 export * from "./shared/components/layout"

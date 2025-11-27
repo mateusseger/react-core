@@ -1,14 +1,6 @@
-/**
- * Auth Service - Mock User Module
- * Handles mock user creation for development mode
- */
-
 import { USER_ROLES } from "../config/permissions-config"
 import type { IUser } from "../types/auth-types"
 
-/**
- * Retrieves mock roles from environment variable
- */
 export function getDevMockRoles(): string[] {
     if (typeof import.meta === 'undefined' || !import.meta.env) {
         return [USER_ROLES.USER]
@@ -24,11 +16,6 @@ export function getDevMockRoles(): string[] {
     return [USER_ROLES.USER]
 }
 
-/**
- * Creates a mock user for development/testing
- * @param customRoles - Optional custom roles array
- * @returns Mock IUser object with valid structure
- */
 export function createMockUser(customRoles?: string[]): IUser {
     const roles = customRoles ?? getDevMockRoles()
     const now = Math.floor(Date.now() / 1000)

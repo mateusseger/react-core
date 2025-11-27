@@ -1,23 +1,5 @@
-// Funções utilitárias para trabalhar com dados de usuário
-// Extração de roles, formatação de nomes e iniciais para avatars
-
 import type { IUser } from "@/features/auth/types/auth-types"
 
-/**
- * Extracts roles from user object supporting multiple Keycloak formats
- * Checks: userRoles (root), userRoles (profile), roles, resource_access, realm_access
- *
- * @param user - User object or null/undefined
- * @returns Array of role strings, empty array if no roles found
- *
- * @example
- * ```ts
- * const roles = getUserRoles(user)
- * if (roles.includes('admin')) {
- *   // User is admin
- * }
- * ```
- */
 export function getUserRoles(user: IUser | null | undefined): string[] {
     if (!user) {
         return []
@@ -59,19 +41,6 @@ export function getUserRoles(user: IUser | null | undefined): string[] {
     return []
 }
 
-/**
- * Gets user display name with safe fallbacks
- * Priority: name → profile.name → email → profile.email → 'User'
- *
- * @param user - User object or null/undefined
- * @returns Display name string, never null
- *
- * @example
- * ```ts
- * const displayName = getUserDisplayName(user)
- * console.log(`Welcome, ${displayName}`)
- * ```
- */
 export function getUserDisplayName(user: IUser | null | undefined): string {
     if (!user) {
         return "User"
@@ -86,21 +55,6 @@ export function getUserDisplayName(user: IUser | null | undefined): string {
     )
 }
 
-/**
- * Generates user initials for avatar display
- * - Email format: First character
- * - Full name: First + Last name initials
- * - Single word: First character
- *
- * @param user - User object or null/undefined
- * @returns 1-2 character uppercase initials, 'U' as fallback
- *
- * @example
- * ```ts
- * const initials = getUserInitials(user)
- * // 'JD' for 'John Doe', 'J' for 'john@example.com'
- * ```
- */
 export function getUserInitials(user: IUser | null | undefined): string {
     const displayName = getUserDisplayName(user)
 

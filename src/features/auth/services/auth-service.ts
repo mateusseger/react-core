@@ -1,39 +1,13 @@
-/**
- * Auth Service - Main Module
- * Centralized authentication service with Keycloak/OIDC
- * Refactored to accept configuration via props
- */
-
 import { UserManager, type UserManagerSettings, WebStorageStateStore } from "oidc-client"
 import type { IUser, AuthConfig } from "../types/auth-types"
 import { createMockUser } from "./auth-mock"
 import { enrichUser } from "./auth-enrichment"
-
-// ==================== STATE MANAGEMENT ====================
 
 let userManager: UserManager | null = null
 let authConfig: AuthConfig | null = null
 let DEV_MODE = false
 let CLIENT_ID = "react-app"
 
-/**
- * Initializes the authentication service with provided configuration.
- * MUST be called before using any other function in this service.
- * 
- * @param config - Authentication configuration (OIDC/Keycloak settings)
- * @param devMode - Enable development mode (bypasses actual authentication)
- * @throws {Error} If configuration is invalid
- * 
- * @example
- * ```ts
- * initAuthService({
- *   authority: 'https://keycloak.example.com/realms/myrealm',
- *   client_id: 'my-app',
- *   redirect_uri: 'https://myapp.com/auth/callback',
- *   post_logout_redirect_uri: 'https://myapp.com'
- * })
- * ```
- */
 export function initAuthService(config: AuthConfig, devMode = false): void {
     authConfig = config
     DEV_MODE = devMode
@@ -77,25 +51,6 @@ function getUserManager(): UserManager {
     return userManager
 }
 
-// ==================== HELPER FUNCTIONS ====================
-// Mock and enrichment functions moved to separate modules
-
-// ==================== PUBLIC API ====================
-
-/**
- * Retrieves the currently authenticated user with enriched profile data
- * 
- * @returns Promise resolving to IUser object or null if not authenticated
- * @throws {Error} If service is not initialized
- * 
- * @example
- * ```ts
- * const user = await getUser()
- * if (user) {
- *   console.log(user.email, user.userRoles)
- * }
- * ```
- */
 export async function getUser(): Promise<IUser | null> {
     ensureInitialized()
 
@@ -120,18 +75,6 @@ export async function getUser(): Promise<IUser | null> {
     }
 }
 
-/**
- * Checks if user is currently authenticated with valid token
- * 
- * @returns Promise resolving to boolean indicating authentication status
- * 
- * @example
- * ```ts
- * if (await isAuthenticated()) {
- *   // User is logged in
- * }
- * ```
- */
 export async function isAuthenticated(): Promise<boolean> {
     if (DEV_MODE) return true
 
@@ -139,16 +82,6 @@ export async function isAuthenticated(): Promise<boolean> {
     return !!user && !!user.access_token && !user.expired
 }
 
-/**
- * Initiates the login flow (redirects to Keycloak/OIDC provider)
- * 
- * @throws {Error} If service is not initialized or login fails
- * 
- * @example
- * ```ts
- * await login() // User will be redirected to Keycloak
- * ```
- */
 export async function login(): Promise<void> {
     ensureInitialized()
 
@@ -163,26 +96,6 @@ export async function login(): Promise<void> {
     }
 }
 
-/**
- * Processes authentication callback after redirect from Keycloak/OIDC
- * Should be called on the redirect_uri page
- * 
- * @returns Promise resolving to authenticated IUser or null on failure
- * @throws {Error} If callback processing fails or user data is invalid
- * 
- * @example
- * ```ts
- * // In /auth/callback page
- * try {
- *   const user = await handleCallback()
- *   if (user) {
- *     navigate('/dashboard')
- *   }
- * } catch (error) {
- *   navigate('/login?error=callback_failed')
- * }
- * ```
- */
 export async function handleCallback(): Promise<IUser | null> {
     ensureInitialized()
 
@@ -208,17 +121,6 @@ export async function handleCallback(): Promise<IUser | null> {
     }
 }
 
-/**
- * Performs complete logout (clears session and redirects to provider)
- * Clears all local storage and session storage
- * 
- * @throws {Error} If service is not initialized
- * 
- * @example
- * ```ts
- * await logout() // User will be logged out and redirected
- * ```
- */
 export async function logout(): Promise<void> {
     ensureInitialized()
 
@@ -253,22 +155,6 @@ export async function logout(): Promise<void> {
     }
 }
 
-/**
- * Retrieves the current access token
- * 
- * @returns Promise resolving to access token string or null if not authenticated
- * 
- * @example
- * ```ts
- * const token = await getToken()
- * if (token) {
- *   // Use token for API calls
- *   fetch('/api/data', {
- *     headers: { Authorization: `Bearer ${token}` }
- *   })
- * }
- * ```
- */
 export async function getToken(): Promise<string | null> {
     if (DEV_MODE) return "mock_access_token"
 
@@ -276,20 +162,6 @@ export async function getToken(): Promise<string | null> {
     return user?.access_token || null
 }
 
-/**
- * Renews the access token using refresh token (silent refresh)
- * 
- * @returns Promise resolving to updated IUser or null on failure
- * 
- * @example
- * ```ts
- * const updatedUser = await renewToken()
- * if (!updatedUser) {
- *   // Token renewal failed, redirect to login
- *   await login()
- * }
- * ```
- */
 export async function renewToken(): Promise<IUser | null> {
     ensureInitialized()
 
@@ -304,8 +176,6 @@ export async function renewToken(): Promise<IUser | null> {
         return null
     }
 }
-
-// ==================== CONSTANTS ====================
 
 export const AUTH_STORAGE_KEYS = {
     TOKEN: "app-token",
@@ -328,6 +198,4 @@ export const AUTH_ERRORS = {
     NETWORK_ERROR: "Network error during authentication",
 } as const
 
-// Re-export from modules
 export { createMockUser } from "./auth-mock"
-

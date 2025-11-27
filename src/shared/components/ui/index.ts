@@ -1,4 +1,4 @@
-// shadcn/ui components
+// SHADCN UI
 export * from "./shadcn/alert"
 export * from "./shadcn/avatar"
 export * from "./shadcn/badge"
@@ -28,6 +28,5 @@ export * from "./shadcn/tabs"
 export * from "./shadcn/textarea"
 export * from "./shadcn/tooltip"
 
-// Custom components
+// CUSTOM
 export * from "./custom/detail-page-skeleton"
-export * from "./custom/scrolling-text"

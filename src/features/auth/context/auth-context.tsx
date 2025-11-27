@@ -1,6 +1,3 @@
-// Context de autenticação - Gerencia estado global de autenticação
-// Refatorado para aceitar configuração via props
-
 import { createContext, type ReactNode, useEffect, useState, useCallback } from "react"
 import { getUser, login, logout as authLogout, PUBLIC_ROUTES, initAuthService } from "../services/auth-service"
 import type { IUser, AuthConfig } from "../types/auth-types"
@@ -22,7 +19,6 @@ interface AuthProviderProps {
 export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children, config, devMode = false }: AuthProviderProps) {
-    // Inicializa o serviço de autenticação com a configuração fornecida
     useEffect(() => {
         initAuthService(config, devMode)
     }, [config, devMode])

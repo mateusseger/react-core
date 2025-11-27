@@ -1,5 +1,3 @@
-// Rotas da feature de autenticação
-
 import { type RouteObject } from "react-router-dom"
 import { AuthCallbackPage } from "./pages/auth-callback-page"
 import { LogoutPage } from "./pages/logout-page"

@@ -15,19 +15,16 @@ const THEME_NAME_KEY = "theme-name"
 const THEME_MODE_KEY = "theme-mode"
 
 function getDefaultThemeName(): ThemeName {
-    // Prioriza localStorage sobre .env para preservar escolha do usuário
     const stored = localStorage.getItem(THEME_NAME_KEY)
     if (isValidTheme(stored)) {
         return stored
     }
 
-    // Fallback para tema do .env
     const envTheme = import.meta.env.VITE_APP_THEME
     if (isValidTheme(envTheme)) {
         return envTheme
     }
 
-    // Fallback para tema padrão
     return DEFAULT_THEME
 }
 
@@ -42,11 +39,9 @@ function getDefaultThemeMode(): ThemeMode {
 function applyTheme(name: ThemeName, mode: ThemeMode) {
     const root = document.documentElement
 
-    // Remove classes anteriores
     root.classList.remove("light", "dark")
     root.removeAttribute("data-theme")
 
-    // Aplica novas classes
     root.classList.add(mode)
     root.setAttribute("data-theme", name)
 }

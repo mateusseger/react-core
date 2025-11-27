@@ -1,8 +1,3 @@
-/**
- * Permissions & Role-Based Access Control (RBAC)
- * Definições de roles e hierarquia
- */
-
 export const USER_ROLES = {
     ADMIN: "admin",
     EDITOR: "editor",

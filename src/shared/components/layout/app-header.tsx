@@ -14,15 +14,8 @@ import {
 import { SidebarTrigger } from "@/shared/components/ui/shadcn/sidebar"
 import { Separator } from "@/shared/components/ui/shadcn/separator"
 import { getUserInitials, getUserDisplayName } from "@/features/auth"
+import { cn } from "@/shared/utils/cn"
 
-/**
- * AppHeader - Barra de navegação superior com acionador da barra lateral, breadcrumb e menu do usuário
- *
- * Componente responsável por exibir o cabeçalho da aplicação, incluindo:
- * - Botão para alternar a visibilidade da barra lateral
- * - Navegação breadcrumb
- * - Menu dropdown do usuário com opção de logout
- */
 export function AppHeader() {
     const { user, logout } = useAuth()
 
@@ -41,21 +34,33 @@ export function AppHeader() {
         <header
             className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 transition-all duration-300"
         >
-            <div className="flex h-14 items-center px-4 gap-4">
+            <div className={cn(
+                "flex items-center",
+                "h-12 sm:h-14",
+                "px-3 sm:px-4",
+                "gap-2 sm:gap-4"
+            )}>
                 <SidebarTrigger className="cursor-pointer" />
-                <Separator orientation="vertical" className="data-[orientation=vertical]:h-4" />
-                <div className="flex-1">
+                <Separator orientation="vertical" className="hidden sm:block data-[orientation=vertical]:h-4" />
+                <div className="flex-1 hidden sm:block">
                     <AppBreadcrumb />
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex-1 sm:hidden" />
+                <div className={cn(
+                    "flex items-center",
+                    "gap-2 sm:gap-3"
+                )}>
                     {user && (
                         <DropdownMenu modal={false}>
                             <DropdownMenuTrigger asChild>
                                 <Button
                                     variant="ghost"
-                                    className="relative h-9 w-9 rounded-full cursor-pointer"
+                                    className={cn(
+                                        "relative rounded-full cursor-pointer",
+                                        "h-8 w-8 sm:h-9 sm:w-9"
+                                    )}
                                 >
-                                    <Avatar className="h-9 w-9">
+                                    <Avatar className="h-8 w-8 sm:h-9 sm:w-9">
                                         <AvatarFallback className="bg-primary text-primary-foreground text-xs font-medium">
                                             {userInitials}
                                         </AvatarFallback>

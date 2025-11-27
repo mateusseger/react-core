@@ -2,82 +2,51 @@ import { useState, useCallback, useMemo, useEffect } from "react"
 import { useLocation } from "react-router-dom"
 import { useAuth, getUserRoles } from "@/features/auth"
 import { type MenuItem } from "@/shared/types/config"
+import { filterMenuItemsByRoles } from "@/shared/utils/menu-helpers"
 
 export function useSidebarMenu(allMenuItems: MenuItem[]) {
-    const location = useLocation()
+    const { pathname: currentPath } = useLocation()
     const { user } = useAuth()
-    const [activeSubmenu, setActiveSubmenu] = useState<MenuItem | null>(null)
+    const [openSubmenu, setOpenSubmenu] = useState<MenuItem | null>(null)
 
     const userRoles = useMemo(() => getUserRoles(user), [user])
+    const menuItems = useMemo(() => filterMenuItemsByRoles(allMenuItems, userRoles), [allMenuItems, userRoles])
 
-    // Filtra os itens de menu baseado nas roles do usuário
-    const menuItems = useMemo(() => {
-        return allMenuItems.filter((item) => {
-            if (!item.roles || item.roles.length === 0) {
-                return true
-            }
-            return item.roles.some((role) => userRoles.includes(role))
-        }).map((item) => {
-            if (item.subItems) {
-                const visibleSubItems = item.subItems.filter((subItem) => {
-                    if (!subItem.roles || subItem.roles.length === 0) {
-                        return true
-                    }
-                    return subItem.roles.some((role) => userRoles.includes(role))
-                })
-                return { ...item, subItems: visibleSubItems }
-            }
-            return item
-        })
-    }, [allMenuItems, userRoles])
-
-    const isRouteActive = useCallback(
-        (url: string) => location.pathname === url,
-        [location.pathname]
+    const isSubRoute = useMemo(
+        () => menuItems.flatMap((m) => m.subItems ?? []).some((sub) => sub.url === currentPath),
+        [menuItems, currentPath]
     )
 
-    // Verifica se um item de menu pai tem algum subitem ativo
-    const hasActiveSubitem = useCallback(
+    useEffect(() => setOpenSubmenu(null), [currentPath])
+
+    const getItemState = useCallback(
         (item: MenuItem) => {
-            if (!item.subItems?.length) return false
-            return item.subItems.some(subItem => isRouteActive(subItem.url))
+            const hasSubmenu = !!item.subItems?.length
+            const isExpanded = openSubmenu?.name === item.name
+
+            const isActive = hasSubmenu
+                ? item.subItems!.some((sub) => sub.url === currentPath)
+                : item.url === currentPath && !isSubRoute
+
+            return { isActive, isExpanded, hasSubmenu }
         },
-        [isRouteActive]
+        [openSubmenu, currentPath, isSubRoute]
     )
 
-    const isSubmenuOpen = useCallback(
-        (item: MenuItem) => activeSubmenu?.name === item.name,
-        [activeSubmenu]
-    )
-
-    const handleItemClick = useCallback(
-        (item: MenuItem) => {
-            if (item.subItems?.length) {
-                setActiveSubmenu((current) =>
-                    current?.name === item.name ? null : item
-                )
-            } else {
-                setActiveSubmenu(null)
-            }
-        },
-        []
-    )
-
-    const closeSubmenu = useCallback(() => {
-        setActiveSubmenu(null)
+    const toggleSubmenu = useCallback((item: MenuItem) => {
+        if (!item.subItems?.length) {
+            setOpenSubmenu(null)
+            return
+        }
+        setOpenSubmenu((current) => (current?.name === item.name ? null : item))
     }, [])
-
-    useEffect(() => {
-        setActiveSubmenu(null)
-    }, [location.pathname])
 
     return {
         menuItems,
-        activeSubmenu,
-        isRouteActive,
-        isSubmenuOpen,
-        hasActiveSubitem,
-        handleItemClick,
-        closeSubmenu,
+        openSubmenu,
+        currentPath,
+        getItemState,
+        toggleSubmenu,
+        closeSubmenu: () => setOpenSubmenu(null),
     }
 }

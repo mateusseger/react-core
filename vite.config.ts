@@ -30,7 +30,6 @@ export default defineConfig({
                 'framer-motion',
                 'sonner',
                 'vaul',
-                'react-error-boundary',
                 'react-day-picker',
                 'clsx',
                 'tailwind-merge'

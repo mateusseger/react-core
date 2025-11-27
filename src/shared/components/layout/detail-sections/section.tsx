@@ -15,6 +15,8 @@ interface SectionProps {
 /**
  * Section - Componente para declarar seções em páginas de detalhe
  *
+ * Mobile First: scroll-margin e tipografia responsivos
+ *
  * Registra automaticamente a seção no DetailSectionsProvider e renderiza
  * um wrapper com propriedades de acessibilidade.
  *
@@ -47,7 +49,10 @@ const SectionComponent = forwardRef<HTMLDivElement, SectionProps>(
                 aria-labelledby={`${id}-heading`}
                 role="region"
                 tabIndex={-1}
-                className={cn("scroll-mt-20 outline-none", className)}
+                className={cn(
+                    "scroll-mt-16 sm:scroll-mt-20 outline-none",
+                    className
+                )}
             >
                 {children}
             </section>
@@ -59,6 +64,8 @@ SectionComponent.displayName = "Section"
 
 /**
  * Section.Header - Componente helper para renderizar o cabeçalho da seção
+ *
+ * Mobile First: Tipografia responsiva
  *
  * Renderiza o título da seção com o id apropriado para aria-labelledby.
  * Use dentro de um componente Section.
@@ -75,11 +82,13 @@ function SectionHeader({ id, label, icon: Icon, className }: SectionHeaderProps)
         <h2
             id={`${id}-heading`}
             className={cn(
-                "text-2xl font-semibold tracking-tight flex items-center gap-2 mb-4",
+                "font-semibold tracking-tight flex items-center gap-2",
+                "text-xl sm:text-2xl",
+                "mb-3 sm:mb-4",
                 className
             )}
         >
-            {Icon && <Icon className="h-6 w-6" />}
+            {Icon && <Icon className="h-5 w-5 sm:h-6 sm:w-6" />}
             {label}
         </h2>
     )

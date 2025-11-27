@@ -2,10 +2,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/sha
 import { Label } from "@/shared/components/ui/shadcn/label"
 import { Switch } from "@/shared/components/ui/shadcn/switch"
 import { Badge } from "@/shared/components/ui/shadcn/badge"
-import { useTheme } from "@/features/temas/hooks/use-theme"
+import { useTheme } from "@/features/themes/hooks/use-theme"
 import { Sun, Moon, Check, Layers, Code } from "lucide-react"
 import { motion } from "framer-motion"
-import { THEMES, type ThemeName } from "@/features/temas/config/themes-config"
+import { THEMES, type ThemeName } from "@/features/themes/config/themes-config"
 import logoHervalDark from "@/shared/assets/logos/herval-dark.png"
 import logoHervalLight from "@/shared/assets/logos/herval-light.png"
 import logoIplaceDark from "@/shared/assets/logos/iplace-dark.svg"
@@ -209,7 +209,7 @@ export function ThemeSettingsPage() {
                             <div>
                                 <p className="font-medium">Adicione no config</p>
                                 <code className="text-xs text-muted-foreground block mt-1 bg-muted px-2 py-1 rounded">
-                                    features/temas/config/themes-config.ts
+                                    features/themes/config/themes-config.ts
                                 </code>
                             </div>
                         </li>
@@ -218,7 +218,7 @@ export function ThemeSettingsPage() {
                             <div>
                                 <p className="font-medium">Adicione as variáveis CSS</p>
                                 <code className="text-xs text-muted-foreground block mt-1 bg-muted px-2 py-1 rounded">
-                                    features/temas/styles/themes.css
+                                    features/themes/styles/themes.css
                                 </code>
                             </div>
                         </li>

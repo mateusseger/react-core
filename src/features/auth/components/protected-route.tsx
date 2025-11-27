@@ -1,6 +1,3 @@
-// Protege rotas baseado em autenticação e roles
-// Redireciona para /unauthorized se usuário não tiver permissão
-
 import { type ReactNode, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth, getUserRoles, hasAnyRole, type UserRole } from "@/features/auth"

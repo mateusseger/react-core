@@ -1,14 +1,5 @@
-/**
- * Authentication Service Types
- *
- * Centralized type definitions for the authentication system
- */
-
 import type { User as OidcUser } from "oidc-client"
 
-/**
- * Extended user profile with additional information from OIDC provider
- */
 export interface UserProfile {
     // OIDC Standard Claims
     iss: string
@@ -36,9 +27,6 @@ export interface UserProfile {
     [key: string]: unknown
 }
 
-/**
- * Application user interface extending OIDC User
- */
 export interface IUser extends OidcUser {
     /** User's email address */
     email?: string
@@ -53,27 +41,18 @@ export interface IUser extends OidcUser {
     profile: UserProfile
 }
 
-/**
- * Authentication state
- */
 export interface AuthState {
     user: IUser | null
     isAuthenticated: boolean
     isLoading: boolean
 }
 
-/**
- * Authentication context type
- */
 export interface AuthContextType extends AuthState {
     login: () => Promise<void>
     logout: () => Promise<void>
     refreshUser: () => Promise<void>
 }
 
-/**
- * Authentication service configuration
- */
 export interface AuthConfig {
     authority: string
     client_id: string

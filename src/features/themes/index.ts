@@ -1,8 +1,3 @@
-/**
- * Theme System
- * Para adicionar um novo tema: edite config/themes-config.ts e styles/themes.css
- */
-
 export { ThemeProvider } from "./context/theme-provider"
 export { useTheme } from "./hooks/use-theme"
 export { THEMES, DEFAULT_THEME, isValidTheme } from "./config/themes-config"

@@ -1,4 +1,3 @@
-// filepath: src/components/layout/detail-sections/DetailSectionsProvider.tsx
 import {
     createContext,
     useContext,
@@ -47,17 +46,17 @@ export function DetailSectionsProvider({ children }: { children: ReactNode }) {
     const [sections, setSections] = useState<SectionData[]>([])
     const [activeSectionId, setActiveSectionId] = useState<string | null>(null)
     const sectionRefs = useRef<Map<string, RefObject<HTMLElement>>>(new Map())
-    
+
     // Refs para evitar recriação de callbacks
     const sectionsRef = useRef<SectionData[]>([])
     const activeSectionIdRef = useRef<string | null>(null)
-    
+
     // Flag para pausar detecção durante scroll programático
     const isScrollingProgrammaticallyRef = useRef(false)
-    
+
     // Timer para throttle
     const scrollTimeoutRef = useRef<number | null>(null)
-    
+
     // Timer para limpar a flag de scroll programático
     const programmaticScrollTimeoutRef = useRef<number | null>(null)
 
@@ -66,12 +65,12 @@ export function DetailSectionsProvider({ children }: { children: ReactNode }) {
     const SCROLL_END_THRESHOLD = 50 // Considera "final da página" quando faltam 50px
     const PROGRAMMATIC_SCROLL_DURATION = 1000 // Duração do scroll programático em ms
     const THROTTLE_DELAY = 100 // Delay do throttle em ms
-    
+
     // Sincroniza refs com states
     useEffect(() => {
         sectionsRef.current = sections
     }, [sections])
-    
+
     useEffect(() => {
         activeSectionIdRef.current = activeSectionId
     }, [activeSectionId])
@@ -237,19 +236,19 @@ export function DetailSectionsProvider({ children }: { children: ReactNode }) {
      */
     useEffect(() => {
         window.addEventListener("scroll", handleScroll, { passive: true })
-        
+
         // Calcula inicialmente
         calculateActiveSection()
 
         return () => {
             window.removeEventListener("scroll", handleScroll)
-            
+
             // Limpa todos os timers
             if (scrollTimeoutRef.current) {
                 clearTimeout(scrollTimeoutRef.current)
                 scrollTimeoutRef.current = null
             }
-            
+
             if (programmaticScrollTimeoutRef.current) {
                 clearTimeout(programmaticScrollTimeoutRef.current)
                 programmaticScrollTimeoutRef.current = null
