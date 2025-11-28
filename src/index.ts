@@ -10,6 +10,9 @@ export * from "./features/errors"
 export * from "./shared/components/layout"
 export * from "./shared/components/ui"
 
+// ASSETS
+export * from "./shared/assets"
+
 // HOOKS
 export * from "./shared/hooks"
 
