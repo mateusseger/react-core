@@ -1,5 +1,5 @@
-import { createContext, useEffect, useState, useCallback, type ReactNode } from "react"
-import { getUser, login, logout as authLogout, initAuth, PUBLIC_ROUTES } from "../services/auth-service"
+import { createContext, useEffect, useState, type ReactNode } from "react"
+import { getUser, login, logout, initAuth, isPublicRoute } from "../services/auth-service"
 import type { User, AuthConfig, AuthContextValue } from "../types/auth-types"
 
 export const AuthContext = createContext<AuthContextValue | null>(null)
@@ -14,16 +14,10 @@ export function AuthProvider({ children, config, devMode = false }: AuthProvider
     const [user, setUser] = useState<User | null>(null)
     const [isLoading, setIsLoading] = useState(true)
 
-    const handleLogout = useCallback(async () => {
-        await authLogout()
-        setUser(null)
-    }, [])
-
     useEffect(() => {
         initAuth(config, devMode)
 
-        const isPublicRoute = PUBLIC_ROUTES.some((r) => window.location.pathname.startsWith(r))
-        if (isPublicRoute) {
+        if (isPublicRoute(window.location.pathname)) {
             setIsLoading(false)
             return
         }
@@ -46,7 +40,7 @@ export function AuthProvider({ children, config, devMode = false }: AuthProvider
     }
 
     return (
-        <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, logout: handleLogout }}>
+        <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, logout }}>
             {children}
         </AuthContext.Provider>
     )

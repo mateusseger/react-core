@@ -20,9 +20,7 @@ export function ProtectedRoute({ children, roles = [] }: ProtectedRouteProps) {
         }
     }, [isAuthenticated, hasAccess, navigate])
 
-    if (!isAuthenticated || !hasAccess) {
-        return null
-    }
+    if (!isAuthenticated || !hasAccess) return null
 
     return <>{children}</>
 }

@@ -1,4 +1,3 @@
-// filepath: src/components/layout/detail-sections/Section.tsx
 import { forwardRef, useEffect, useRef, type ReactNode } from "react"
 import { type LucideIcon } from "lucide-react"
 import { cn } from "@/shared/utils/cn"

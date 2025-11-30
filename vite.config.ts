@@ -26,7 +26,7 @@ export default defineConfig({
                 'react-router-dom',
                 /^@radix-ui\/.*/,
                 'lucide-react',
-                'oidc-client',
+                'oidc-client-ts',
                 'framer-motion',
                 'sonner',
                 'vaul',

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 
 const BREAKPOINTS = {
     sm: 640,
@@ -15,21 +15,26 @@ interface UseBreakpointOptions {
 }
 
 export function useBreakpoint(breakpoint: BreakpointKey, options?: UseBreakpointOptions) {
-    const [isBelow, setIsBelow] = useState(false)
     const value = BREAKPOINTS[breakpoint]
+    const [isBelow, setIsBelow] = useState<boolean | undefined>(undefined)
+    const onEnterRef = useRef(options?.onEnter)
+
+    onEnterRef.current = options?.onEnter
 
     useEffect(() => {
         const mql = window.matchMedia(`(max-width: ${value - 1}px)`)
+
         const onChange = () => {
-            setIsBelow(window.innerWidth < value)
-            if (window.innerWidth < value && options?.onEnter) {
-                options.onEnter()
+            setIsBelow(mql.matches)
+            if (mql.matches && onEnterRef.current) {
+                onEnterRef.current()
             }
         }
-        mql.addEventListener("change", onChange)
-        setIsBelow(window.innerWidth < value)
-        return () => mql.removeEventListener("change", onChange)
-    }, [value, options?.onEnter])
 
-    return isBelow
+        onChange()
+        mql.addEventListener("change", onChange)
+        return () => mql.removeEventListener("change", onChange)
+    }, [value])
+
+    return !!isBelow
 }

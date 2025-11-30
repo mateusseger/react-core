@@ -1,4 +1,3 @@
-// filepath: src/components/layout/detail-sections/DetailSectionsSidebar.tsx
 import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "@/shared/utils/cn"
 import { useDetailSections } from "./detail-sections-provider"

@@ -1,49 +1,31 @@
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState } from "react"
 import { Loader2, XCircle } from "lucide-react"
 import { handleCallback, login } from "../services/auth-service"
 import { Button } from "@/shared/components/ui/shadcn/button"
 
+const SESSION_ERRORS = ["expired", "invalid_grant", "unauthorized", "No matching state", "login_required"]
+
+function isSessionError(message: string): boolean {
+    return SESSION_ERRORS.some((err) => message.toLowerCase().includes(err.toLowerCase()))
+}
+
 export function AuthCallbackPage() {
     const [error, setError] = useState<string | null>(null)
-    const hasProcessed = useRef(false)
 
     useEffect(() => {
-        if (hasProcessed.current) return
-        hasProcessed.current = true
-
         handleCallback()
             .then((user) => {
                 if (user) {
                     window.location.href = "/"
                 } else {
-                    // Token inválido ou expirado → redireciona para login
                     login()
                 }
             })
             .catch((err) => {
-                console.error("[AuthCallback] Erro:", err)
                 const message = err instanceof Error ? err.message : "Falha na autenticação"
-
-                // Erros de sessão/token → redireciona para login
-                if (isSessionError(message)) {
-                    login()
-                    return
-                }
-
-                setError(message)
+                isSessionError(message) ? login() : setError(message)
             })
     }, [])
-
-    function isSessionError(message: string): boolean {
-        const sessionErrors = [
-            "expired",
-            "invalid_grant",
-            "unauthorized",
-            "No matching state",
-            "login_required",
-        ]
-        return sessionErrors.some((e) => message.toLowerCase().includes(e.toLowerCase()))
-    }
 
     if (error) {
         return (
@@ -68,9 +50,7 @@ export function AuthCallbackPage() {
                 <Loader2 className="mx-auto h-12 w-12 animate-spin text-primary" />
                 <div className="space-y-2">
                     <h1 className="text-xl font-semibold">Autenticando...</h1>
-                    <p className="text-sm text-muted-foreground">
-                        Aguarde enquanto processamos seu login.
-                    </p>
+                    <p className="text-sm text-muted-foreground">Aguarde enquanto processamos seu login.</p>
                 </div>
             </div>
         </div>
