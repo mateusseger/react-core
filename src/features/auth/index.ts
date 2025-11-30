@@ -1,11 +1,18 @@
+// Types
+export type { User, AuthConfig, UserProfile } from "./types/auth-types"
+
+// Provider & Hook
+export { AuthProvider } from "./context/auth-context"
 export { useAuth } from "./hooks/use-auth"
-export { useAuthorization } from "./hooks/use-authorization"
-export { AuthContext, AuthProvider } from "./context/auth-context"
-export { handleCallback, logout, AUTH_ERRORS } from "./services/auth-service"
-export type { IUser, AuthConfig, AuthContextType, UserProfile } from "./types/auth-types"
+
+// Components
 export { ProtectedRoute } from "./components/protected-route"
-export { USER_ROLES, ROLE_HIERARCHY } from "./config/permissions-config"
-export type { UserRole } from "./config/permissions-config"
-export { getUserRoles, getUserDisplayName, getUserInitials } from "./utils/user-helpers"
-export { hasRole, hasAnyRole, hasAllRoles, hasMinimumRoleLevel } from "./utils/permission-helpers"
+
+// Utils
+export { getUserRoles, hasRole, hasAnyRole, hasAllRoles, getUserDisplayName, getUserInitials } from "./utils/auth-utils"
+
+// Service (uso avançado)
+export { handleCallback, logout } from "./services/auth-service"
+
+// Routes
 export { authRoutes } from "./routes"

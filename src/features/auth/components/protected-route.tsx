@@ -1,34 +1,26 @@
 import { type ReactNode, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import { useAuth, getUserRoles, hasAnyRole, type UserRole } from "@/features/auth"
+import { useAuth } from "../hooks/use-auth"
+import { hasAnyRole } from "../utils/auth-utils"
 
 interface ProtectedRouteProps {
     children: ReactNode
-    requiredRoles?: UserRole[]
+    roles?: string[]
 }
 
-export function ProtectedRoute({ children, requiredRoles = [] }: ProtectedRouteProps) {
+export function ProtectedRoute({ children, roles = [] }: ProtectedRouteProps) {
     const navigate = useNavigate()
     const { user, isAuthenticated } = useAuth()
 
-    const userRoles = getUserRoles(user)
-    const hasRequiredAccess = requiredRoles.length === 0 || hasAnyRole(userRoles, requiredRoles)
+    const hasAccess = !roles.length || hasAnyRole(user, roles)
 
     useEffect(() => {
-        if (!isAuthenticated) {
-            return
-        }
-
-        if (!hasRequiredAccess) {
+        if (isAuthenticated && !hasAccess) {
             navigate("/unauthorized", { replace: true })
         }
-    }, [isAuthenticated, hasRequiredAccess, navigate])
+    }, [isAuthenticated, hasAccess, navigate])
 
-    if (!isAuthenticated) {
-        return null
-    }
-
-    if (!hasRequiredAccess) {
+    if (!isAuthenticated || !hasAccess) {
         return null
     }
 

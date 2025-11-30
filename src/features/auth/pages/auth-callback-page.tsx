@@ -1,9 +1,7 @@
 import { useEffect, useState, useRef } from "react"
 import { Loader2, XCircle } from "lucide-react"
-import { handleCallback, AUTH_ERRORS } from "@/features/auth"
+import { handleCallback, login } from "../services/auth-service"
 import { Button } from "@/shared/components/ui/shadcn/button"
-
-const REDIRECT_HOME = "/"
 
 export function AuthCallbackPage() {
     const [error, setError] = useState<string | null>(null)
@@ -13,22 +11,39 @@ export function AuthCallbackPage() {
         if (hasProcessed.current) return
         hasProcessed.current = true
 
-        const processCallback = async () => {
-            try {
-                const user = await handleCallback()
+        handleCallback()
+            .then((user) => {
                 if (user) {
-                    window.location.href = REDIRECT_HOME
+                    window.location.href = "/"
                 } else {
-                    setError(AUTH_ERRORS.INVALID_USER)
+                    // Token inválido ou expirado → redireciona para login
+                    login()
                 }
-            } catch (err) {
+            })
+            .catch((err) => {
                 console.error("[AuthCallback] Erro:", err)
-                setError(err instanceof Error ? err.message : AUTH_ERRORS.CALLBACK_FAILED)
-            }
-        }
+                const message = err instanceof Error ? err.message : "Falha na autenticação"
 
-        processCallback()
+                // Erros de sessão/token → redireciona para login
+                if (isSessionError(message)) {
+                    login()
+                    return
+                }
+
+                setError(message)
+            })
     }, [])
+
+    function isSessionError(message: string): boolean {
+        const sessionErrors = [
+            "expired",
+            "invalid_grant",
+            "unauthorized",
+            "No matching state",
+            "login_required",
+        ]
+        return sessionErrors.some((e) => message.toLowerCase().includes(e.toLowerCase()))
+    }
 
     if (error) {
         return (
@@ -39,7 +54,7 @@ export function AuthCallbackPage() {
                         <h1 className="text-xl font-semibold">Falha na Autenticação</h1>
                         <p className="text-sm text-muted-foreground">{error}</p>
                     </div>
-                    <Button onClick={() => (window.location.href = REDIRECT_HOME)} className="w-full">
+                    <Button onClick={() => (window.location.href = "/")} className="w-full">
                         Voltar ao Início
                     </Button>
                 </div>

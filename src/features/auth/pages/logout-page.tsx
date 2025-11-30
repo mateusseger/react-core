@@ -1,8 +1,6 @@
 import { useEffect, useRef } from "react"
 import { Loader2 } from "lucide-react"
-import { logout } from "@/features/auth"
-
-const REDIRECT_HOME = "/"
+import { logout } from "../services/auth-service"
 
 export function LogoutPage() {
     const hasLoggedOut = useRef(false)
@@ -11,16 +9,10 @@ export function LogoutPage() {
         if (hasLoggedOut.current) return
         hasLoggedOut.current = true
 
-        const performLogout = async () => {
-            try {
-                await logout()
-            } catch (error) {
-                console.error("[Logout] Erro:", error)
-                window.location.href = REDIRECT_HOME
-            }
-        }
-
-        performLogout()
+        logout().catch((error) => {
+            console.error("[Logout] Erro:", error)
+            window.location.href = "/"
+        })
     }, [])
 
     return (

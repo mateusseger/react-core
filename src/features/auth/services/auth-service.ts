@@ -1,201 +1,156 @@
 import { UserManager, type UserManagerSettings, WebStorageStateStore } from "oidc-client"
-import type { IUser, AuthConfig } from "../types/auth-types"
-import { createMockUser } from "./auth-mock"
-import { enrichUser } from "./auth-enrichment"
+import type { User, UserProfile, AuthConfig } from "../types/auth-types"
+
+// =============================================================================
+// State
+// =============================================================================
 
 let userManager: UserManager | null = null
-let authConfig: AuthConfig | null = null
-let DEV_MODE = false
-let CLIENT_ID = "react-app"
+let clientId = ""
+let devMode = false
+let mockRoles: string[] = ["user"]
 
-export function initAuthService(config: AuthConfig, devMode = false): void {
-    authConfig = config
-    DEV_MODE = devMode
-    CLIENT_ID = config.client_id
+// =============================================================================
+// Public API
+// =============================================================================
 
-    if (!DEV_MODE) {
-        const oidcConfig: UserManagerSettings = {
+export function initAuth(config: AuthConfig, isDevMode = false): void {
+    devMode = isDevMode
+    clientId = config.clientId
+    mockRoles = config.devMockRoles ?? ["user"]
+
+    if (!devMode) {
+        const settings: UserManagerSettings = {
             authority: config.authority,
-            client_id: config.client_id,
-            redirect_uri: config.redirect_uri,
-            silent_redirect_uri: config.silentRedirectUri || config.redirect_uri,
-            response_type: config.response_type || "code",
-            scope: config.scope || "openid profile email",
-            post_logout_redirect_uri: config.post_logout_redirect_uri || window.location.origin,
+            client_id: config.clientId,
+            redirect_uri: config.redirectUri,
+            post_logout_redirect_uri: config.postLogoutRedirectUri ?? window.location.origin,
+            response_type: "code",
+            scope: config.scope ?? "openid profile email",
             userStore: new WebStorageStateStore({ store: window.localStorage }),
-            stateStore: new WebStorageStateStore({ store: window.localStorage }),
-            revokeAccessTokenOnSignout: true,
-            automaticSilentRenew: config.automaticSilentRenew ?? true,
-            loadUserInfo: config.loadUserInfo ?? true,
+            automaticSilentRenew: true,
+            loadUserInfo: true,
         }
-
-        userManager = new UserManager(oidcConfig)
+        userManager = new UserManager(settings)
+        setupAuthEvents()
     }
 }
 
-function ensureInitialized(): void {
-    if (!authConfig) {
-        const error = "Service not initialized. Call initAuthService(config) first."
-        console.error(error)
-        throw new Error(`[AuthService] ${error}`)
-    }
+function setupAuthEvents(): void {
+    if (!userManager) return
+
+    // Token expirou
+    userManager.events.addAccessTokenExpired(() => {
+        console.warn("[Auth] Token expirado")
+        login()
+    })
+
+    // Renovação silenciosa falhou TODO: TIRAR A RENOVACAO AUTOMATICA
+    userManager.events.addSilentRenewError((error) => {
+        console.warn("[Auth] Falha na renovação silenciosa:", error)
+        login()
+    })
+
+    // Usuário fez logout (em outra aba, por exemplo)
+    userManager.events.addUserSignedOut(() => {
+        console.warn("[Auth] Usuário deslogado")
+        login()
+    })
+
+    // Token renovado com sucesso (opcional, para debug)
+    userManager.events.addAccessTokenExpiring(() => {
+        console.info("[Auth] Token expirando, renovando...")
+    })
 }
 
-function getUserManager(): UserManager {
-    ensureInitialized()
-    if (!userManager) {
-        const error = "UserManager not available in dev mode"
-        console.error(error)
-        throw new Error(`[AuthService] ${error}`)
-    }
-    return userManager
-}
-
-export async function getUser(): Promise<IUser | null> {
-    ensureInitialized()
-
-    if (DEV_MODE) {
-        const mockUser = createMockUser()
-        localStorage.setItem("app-token", mockUser.access_token)
-        return mockUser
-    }
+export async function getUser(): Promise<User | null> {
+    if (devMode) return createMockUser()
 
     try {
-        const manager = getUserManager()
-        const user = await manager.getUser()
-
-        if (!user || user.expired) {
-            return null
-        }
-
-        return enrichUser(user, CLIENT_ID)
-    } catch (error) {
-        console.error("Failed to get user", error)
+        const oidcUser = await userManager?.getUser()
+        if (!oidcUser || oidcUser.expired) return null
+        return enrichUser(oidcUser)
+    } catch {
         return null
     }
 }
 
-export async function isAuthenticated(): Promise<boolean> {
-    if (DEV_MODE) return true
-
-    const user = await getUser()
-    return !!user && !!user.access_token && !user.expired
-}
-
 export async function login(): Promise<void> {
-    ensureInitialized()
-
-    if (DEV_MODE) return
-
-    try {
-        const manager = getUserManager()
-        await manager.signinRedirect()
-    } catch (error) {
-        console.error("Login failed", error)
-        throw new Error("Failed to initiate login")
-    }
+    if (devMode) return
+    await userManager?.signinRedirect()
 }
 
-export async function handleCallback(): Promise<IUser | null> {
-    ensureInitialized()
+export async function handleCallback(): Promise<User | null> {
+    if (devMode) return createMockUser()
 
-    if (DEV_MODE) {
-        return createMockUser()
+    const oidcUser = await userManager?.signinRedirectCallback()
+    if (!oidcUser?.access_token) {
+        throw new Error("Dados de usuário inválidos")
     }
-
-    try {
-        const manager = getUserManager()
-        const user = await manager.signinRedirectCallback()
-
-        if (!user || !user.access_token) {
-            throw new Error("Dados de usuário inválidos")
-        }
-
-        const enrichedUser = enrichUser(user, CLIENT_ID)
-        localStorage.setItem("app-token", user.access_token)
-
-        return enrichedUser
-    } catch (error) {
-        console.error("Authentication callback failed", error)
-        throw new Error("Failed to process authentication callback")
-    }
+    return enrichUser(oidcUser)
 }
 
 export async function logout(): Promise<void> {
-    ensureInitialized()
-
-    if (DEV_MODE) {
+    if (devMode) {
         localStorage.clear()
-        sessionStorage.clear()
         window.location.href = "/"
         return
     }
 
     try {
-        const manager = getUserManager()
-        await manager.signoutRedirect()
+        await userManager?.signoutRedirect()
+    } catch {
         localStorage.clear()
-        sessionStorage.clear()
-    } catch (error) {
-        console.error("Logout failed, attempting fallback", error)
-
-        try {
-            const manager = getUserManager()
-            await manager.removeUser()
-        } catch (e) {
-            console.error("Failed to remove user", e)
-        }
-
-        localStorage.clear()
-        sessionStorage.clear()
-
-        const authority = authConfig!.authority
-        const redirectUri = encodeURIComponent(authConfig!.post_logout_redirect_uri || window.location.origin)
-        window.location.href = `${authority}/protocol/openid-connect/logout?post_logout_redirect_uri=${redirectUri}`
+        window.location.href = "/"
     }
 }
 
-export async function getToken(): Promise<string | null> {
-    if (DEV_MODE) return "mock_access_token"
+export const PUBLIC_ROUTES = ["/auth/callback", "/auth/logout", "/unauthorized"]
 
-    const user = await getUser()
-    return user?.access_token || null
+// =============================================================================
+// Internal Helpers
+// =============================================================================
+
+function enrichUser(oidcUser: import("oidc-client").User): User {
+    const profile = oidcUser.profile as UserProfile
+    return {
+        ...oidcUser,
+        profile,
+        roles: extractRoles(profile),
+        email: profile.email ?? profile.preferred_username,
+        name: profile.name ?? profile.preferred_username,
+    } as User
 }
 
-export async function renewToken(): Promise<IUser | null> {
-    ensureInitialized()
-
-    if (DEV_MODE) return createMockUser()
-
-    try {
-        const manager = getUserManager()
-        const user = await manager.signinSilent()
-        return enrichUser(user, CLIENT_ID)
-    } catch (error) {
-        console.error("Token renewal failed", error)
-        return null
+function extractRoles(profile: UserProfile): string[] {
+    // Prioridade: userRoles > resource_access > roles > realm_access
+    if (profile.userRoles?.length) return profile.userRoles
+    if (profile.resource_access?.[clientId]?.roles?.length) {
+        return profile.resource_access[clientId].roles
     }
+    if (profile.roles?.length) return profile.roles
+    if (profile.realm_access?.roles?.length) return profile.realm_access.roles
+    return []
 }
 
-export const AUTH_STORAGE_KEYS = {
-    TOKEN: "app-token",
-    USER: "app-user",
-    STATE: "oidc-state",
-} as const
+function createMockUser(): User {
+    const now = Math.floor(Date.now() / 1000)
 
-export const PUBLIC_ROUTES = [
-    "/auth/callback",
-    "/auth/logout",
-    "/unauthorized",
-] as const
-
-export const AUTH_ERRORS = {
-    CALLBACK_FAILED: "Failed to process authentication callback",
-    LOGOUT_FAILED: "Failed to complete logout",
-    TOKEN_EXPIRED: "Your session has expired. Please log in again",
-    UNAUTHORIZED: "You don't have permission to access this resource",
-    INVALID_USER: "Invalid user data received",
-    NETWORK_ERROR: "Network error during authentication",
-} as const
-
-export { createMockUser } from "./auth-mock"
+    return {
+        access_token: "mock_token",
+        token_type: "Bearer",
+        expires_at: now + 3600,
+        expired: false,
+        scopes: ["openid", "profile", "email"],
+        toStorageString: () => "{}",
+        profile: {
+            sub: "mock-user",
+            name: "Dev User",
+            email: "dev@localhost",
+            userRoles: mockRoles,
+        },
+        roles: mockRoles,
+        email: "dev@localhost",
+        name: "Dev User",
+    } as User
+}

@@ -1,5 +1,5 @@
-import { type LucideIcon } from "lucide-react"
-import { type AuthConfig } from "@/features/auth"
+import type { LucideIcon } from "lucide-react"
+import type { AuthConfig } from "@/features/auth"
 
 export interface ProjectConfig {
     name: string
@@ -23,10 +23,10 @@ export interface MenuItem {
     subItems?: MenuSubItem[]
 }
 
-export type { AuthConfig }
-
 export interface AppConfig {
     project: ProjectConfig
     menu: MenuItem[]
     auth: AuthConfig
 }
+
+export type { AuthConfig }

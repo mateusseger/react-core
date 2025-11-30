@@ -1,4 +1,4 @@
-import { type RouteObject } from "react-router-dom"
+import type { RouteObject } from "react-router-dom"
 import { AuthCallbackPage } from "./pages/auth-callback-page"
 import { LogoutPage } from "./pages/logout-page"
 import { UnauthorizedPage } from "./pages/unauthorized-page"
@@ -6,14 +6,14 @@ import { UnauthorizedPage } from "./pages/unauthorized-page"
 export const authRoutes: RouteObject[] = [
     {
         path: "/auth/callback",
-        element: <AuthCallbackPage />,
+        element: <AuthCallbackPage />
     },
     {
         path: "/auth/logout",
-        element: <LogoutPage />,
+        element: <LogoutPage />
     },
     {
         path: "/unauthorized",
-        element: <UnauthorizedPage />,
+        element: <UnauthorizedPage />
     },
 ]

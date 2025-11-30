@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo, useEffect } from "react"
 import { useLocation } from "react-router-dom"
-import { useAuth, getUserRoles } from "@/features/auth"
-import { type MenuItem } from "@/shared/types/config"
+import { useAuth } from "@/features/auth"
+import type { MenuItem } from "@/shared/types/config"
 import { filterMenuItemsByRoles } from "@/shared/utils/menu-helpers"
 
 export function useSidebarMenu(allMenuItems: MenuItem[]) {
@@ -9,7 +9,7 @@ export function useSidebarMenu(allMenuItems: MenuItem[]) {
     const { user } = useAuth()
     const [openSubmenu, setOpenSubmenu] = useState<MenuItem | null>(null)
 
-    const userRoles = useMemo(() => getUserRoles(user), [user])
+    const userRoles = useMemo(() => user?.roles ?? [], [user])
     const menuItems = useMemo(() => filterMenuItemsByRoles(allMenuItems, userRoles), [allMenuItems, userRoles])
 
     const isSubRoute = useMemo(

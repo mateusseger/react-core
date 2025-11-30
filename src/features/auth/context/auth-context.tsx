@@ -1,14 +1,8 @@
-import { createContext, type ReactNode, useEffect, useState, useCallback } from "react"
-import { getUser, login, logout as authLogout, PUBLIC_ROUTES, initAuthService } from "../services/auth-service"
-import type { IUser, AuthConfig } from "../types/auth-types"
+import { createContext, useEffect, useState, useCallback, type ReactNode } from "react"
+import { getUser, login, logout as authLogout, initAuth, PUBLIC_ROUTES } from "../services/auth-service"
+import type { User, AuthConfig, AuthContextValue } from "../types/auth-types"
 
-export type AuthContextType = {
-    user: IUser | null
-    isAuthenticated: boolean
-    isLoading: boolean
-    logout: () => Promise<void>
-    refreshUser: () => Promise<void>
-}
+export const AuthContext = createContext<AuthContextValue | null>(null)
 
 interface AuthProviderProps {
     children: ReactNode
@@ -16,120 +10,43 @@ interface AuthProviderProps {
     devMode?: boolean
 }
 
-export const AuthContext = createContext<AuthContextType | undefined>(undefined)
-
 export function AuthProvider({ children, config, devMode = false }: AuthProviderProps) {
-    useEffect(() => {
-        initAuthService(config, devMode)
-    }, [config, devMode])
-    const [user, setUser] = useState<IUser | null>(null)
-    const [isAuthenticated, setIsAuthenticated] = useState(false)
+    const [user, setUser] = useState<User | null>(null)
     const [isLoading, setIsLoading] = useState(true)
 
-    const isPublicRoute = useCallback((): boolean => {
-        const pathname = window.location.pathname
-        return PUBLIC_ROUTES.some((route) => pathname.startsWith(route))
-    }, [])
-
-    const refreshUser = useCallback(async () => {
-        try {
-            const currentUser = await getUser()
-
-            if (currentUser) {
-                setUser(currentUser)
-                setIsAuthenticated(true)
-            } else {
-                setUser(null)
-                setIsAuthenticated(false)
-            }
-        } catch (error) {
-            console.error("Failed to refresh user", error)
-            setUser(null)
-            setIsAuthenticated(false)
-        }
-    }, [])
-
     const handleLogout = useCallback(async () => {
-        try {
-            await authLogout()
-            setUser(null)
-            setIsAuthenticated(false)
-        } catch (error) {
-            console.error("Logout error", error)
-            setUser(null)
-            setIsAuthenticated(false)
-            window.location.href = "/"
-        }
+        await authLogout()
+        setUser(null)
     }, [])
 
     useEffect(() => {
-        let isMounted = true
+        initAuth(config, devMode)
 
-        async function initAuth() {
-            if (isPublicRoute()) {
-                setIsLoading(false)
-                return
-            }
-
-            try {
-                const currentUser = await getUser()
-
-                if (!isMounted) return
-
-                if (currentUser) {
-                    setUser(currentUser)
-                    setIsAuthenticated(true)
-                } else {
-                    await login()
-                }
-            } catch (error) {
-                console.error("Auth initialization failed", error)
-
-                if (!isMounted) return
-
-                try {
-                    await login()
-                } catch (loginError) {
-                    console.error("Login failed", loginError)
-                }
-            } finally {
-                if (isMounted) {
-                    setIsLoading(false)
-                }
-            }
+        const isPublicRoute = PUBLIC_ROUTES.some((r) => window.location.pathname.startsWith(r))
+        if (isPublicRoute) {
+            setIsLoading(false)
+            return
         }
 
-        initAuth()
-
-        return () => {
-            isMounted = false
-        }
-    }, [isPublicRoute])
+        getUser()
+            .then((u) => (u ? setUser(u) : login()))
+            .catch(() => login())
+            .finally(() => setIsLoading(false))
+    }, [config, devMode])
 
     if (isLoading) {
         return (
             <div className="flex min-h-screen items-center justify-center">
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
-                    <h2 className="text-lg font-semibold mb-2">Carregando...</h2>
-                    <p className="text-sm text-muted-foreground">
-                        Verificando autenticação
-                    </p>
+                    <p className="text-sm text-muted-foreground">Carregando...</p>
                 </div>
             </div>
         )
     }
 
     return (
-        <AuthContext.Provider
-            value={{
-                user,
-                isAuthenticated,
-                isLoading,
-                logout: handleLogout,
-                refreshUser,
-            }}
-        >
+        <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, logout: handleLogout }}>
             {children}
         </AuthContext.Provider>
     )

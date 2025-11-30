@@ -1,66 +1,59 @@
 import type { User as OidcUser } from "oidc-client"
 
-export interface UserProfile {
-    // OIDC Standard Claims
-    iss: string
-    aud: string
-    exp: number
-    iat: number
-    sub: string
+// =============================================================================
+// User
+// =============================================================================
 
-    // Optional Standard Claims
+export interface UserProfile {
+    sub: string
     name?: string
     email?: string
-    email_verified?: boolean
     preferred_username?: string
     given_name?: string
     family_name?: string
     picture?: string
 
-    // Keycloak Specific Claims
+    // Role claims (varia por provider)
     roles?: string[]
     userRoles?: string[]
     resource_access?: Record<string, { roles: string[] }>
     realm_access?: { roles: string[] }
 
-    // Allow additional claims with type safety
     [key: string]: unknown
 }
 
-export interface IUser extends OidcUser {
-    /** User's email address */
+export interface User extends Omit<OidcUser, "profile"> {
     email?: string
-
-    /** User's full name */
     name?: string
-
-    /** User's roles/permissions */
-    userRoles: string[]
-
-    /** User's profile information */
+    roles: string[]
     profile: UserProfile
 }
 
-export interface AuthState {
-    user: IUser | null
-    isAuthenticated: boolean
-    isLoading: boolean
-}
-
-export interface AuthContextType extends AuthState {
-    login: () => Promise<void>
-    logout: () => Promise<void>
-    refreshUser: () => Promise<void>
-}
+// =============================================================================
+// Auth Config
+// =============================================================================
 
 export interface AuthConfig {
+    /** URL do servidor de autenticação (ex: https://auth.example.com/realms/app) */
     authority: string
-    client_id: string
-    redirect_uri: string
-    post_logout_redirect_uri?: string
-    response_type?: string
+    /** ID do cliente registrado no servidor de auth */
+    clientId: string
+    /** URL de callback após login */
+    redirectUri: string
+    /** URL de redirecionamento após logout */
+    postLogoutRedirectUri?: string
+    /** Escopos OAuth (default: "openid profile email") */
     scope?: string
-    automaticSilentRenew?: boolean
-    loadUserInfo?: boolean
-    silentRedirectUri?: string
+    /** Roles para mock user em dev mode (default: ["user"]) */
+    devMockRoles?: string[]
+}
+
+// =============================================================================
+// Auth Context Value
+// =============================================================================
+export interface AuthContextValue {
+    user: User | null
+    isAuthenticated: boolean
+    isLoading: boolean
+    logout: () => Promise<void>
 }

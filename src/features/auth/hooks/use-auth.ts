@@ -1,14 +1,11 @@
-// Hook de autenticação - Fornece acesso ao contexto de autenticação
-
 import { useContext } from "react"
-import { AuthContext } from "@/features/auth"
+import { AuthContext } from "../context/auth-context"
+import type { AuthContextValue } from "../types/auth-types"
 
-export function useAuth() {
+export function useAuth(): AuthContextValue {
     const context = useContext(AuthContext)
-
-    if (context === undefined) {
-        throw new Error("useAuth must be used within an AuthProvider")
+    if (!context) {
+        throw new Error("useAuth must be used within AuthProvider")
     }
-
     return context
 }

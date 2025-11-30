@@ -1,15 +1,8 @@
 import { createContext, useEffect, useState, type ReactNode } from "react"
-import type { ThemeMode, ThemeConfig, ThemeName } from "../types/theme-types"
+import type { ThemeMode, ThemeConfig, ThemeName, ThemeContextValue } from "../types/theme-types"
 import { isValidTheme, DEFAULT_THEME } from "../config/themes-config"
 
-export interface ThemeContextType {
-    theme: ThemeConfig
-    setThemeName: (name: ThemeName) => void
-    setThemeMode: (mode: ThemeMode) => void
-    toggleMode: () => void
-}
-
-export const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
+export const ThemeContext = createContext<ThemeContextValue | undefined>(undefined)
 
 const THEME_NAME_KEY = "theme-name"
 const THEME_MODE_KEY = "theme-mode"
