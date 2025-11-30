@@ -1,5 +1,6 @@
+import { AlertTriangle, ArrowLeft, RefreshCw } from "lucide-react"
 import { Button } from "@/shared/components/ui/shadcn/button"
-import { cn } from "@/shared/utils/cn"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/shared/components/ui/shadcn/card"
 
 export interface ErrorFallbackProps {
     error: Error | { message: string; stack?: string | null }
@@ -15,47 +16,38 @@ export function ErrorFallback({ error, resetErrorBoundary, showStack = false }: 
     const handleBack = () => window.history.length > 1 ? window.history.back() : (window.location.href = "/")
 
     return (
-        <div className={cn(
-            "flex min-h-screen items-center justify-center bg-background",
-            "p-4 sm:p-6"
-        )}>
-            <div className="w-full max-w-lg sm:max-w-2xl">
-                <div className="text-center mb-6 sm:mb-8">
-                    <div className={cn(
-                        "inline-flex items-center justify-center rounded-full bg-destructive/10",
-                        "w-12 h-12 sm:w-16 sm:h-16",
-                        "mb-3 sm:mb-4"
-                    )}>
-                        <span className="text-2xl sm:text-3xl">⚠️</span>
+        <div className="flex min-h-svh items-center justify-center bg-background p-4">
+            <Card className="w-full max-w-sm text-center sm:max-w-md">
+                <CardHeader className="items-center justify-items-center">
+                    <div className="mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-destructive/10">
+                        <AlertTriangle className="h-7 w-7 text-destructive" />
                     </div>
-                    <h2 className="text-xl sm:text-2xl font-bold mb-2">Algo deu errado</h2>
-                    <p className="text-sm sm:text-base text-muted-foreground">{message}</p>
-                </div>
+                    <CardTitle className="text-xl">Algo deu errado</CardTitle>
+                    <CardDescription>{message}</CardDescription>
+                </CardHeader>
 
                 {showStack && stack && (
-                    <details className={cn(
-                        "mb-4 sm:mb-6 rounded-lg bg-muted",
-                        "p-3 sm:p-4",
-                        "text-xs sm:text-sm"
-                    )}>
-                        <summary className="cursor-pointer font-medium mb-2">
-                            Stack Trace
-                        </summary>
-                        <pre className="overflow-auto text-[10px] sm:text-xs whitespace-pre-wrap">
-                            {stack}
-                        </pre>
-                    </details>
+                    <CardContent>
+                        <details className="rounded-lg bg-muted p-3 text-left text-xs">
+                            <summary className="cursor-pointer font-medium">Stack Trace</summary>
+                            <pre className="mt-2 overflow-auto whitespace-pre-wrap text-[10px]">
+                                {stack}
+                            </pre>
+                        </details>
+                    </CardContent>
                 )}
 
-                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 justify-center">
-                    <Button onClick={handleRetry} className="w-full sm:w-auto">
-                        Tentar Novamente
-                    </Button>
-                    <Button variant="outline" onClick={handleBack} className="w-full sm:w-auto">
+                <CardFooter className="flex flex-col gap-2 sm:flex-row">
+                    <Button variant="outline" onClick={handleBack} className="w-full gap-2 sm:flex-1">
+                        <ArrowLeft className="h-4 w-4" />
                         Voltar
                     </Button>
-                </div>
-            </div>
+                    <Button onClick={handleRetry} className="w-full gap-2 sm:flex-1">
+                        <RefreshCw className="h-4 w-4" />
+                        Tentar Novamente
+                    </Button>
+                </CardFooter>
+            </Card>
         </div>
     )
 }
