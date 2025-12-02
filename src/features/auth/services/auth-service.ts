@@ -54,33 +54,11 @@ function handleCrossTabAuthSync(event: StorageEvent): void {
     if (!event.oldValue && event.newValue) window.location.reload()
 }
 
-export async function getUser(): Promise<User | null> {
-    if (devMode) return createMockUser()
-
-    const oidcUser = await userManager?.getUser()
-    if (!oidcUser || oidcUser.expired) return null
-
-    return toUser(oidcUser)
-}
-
 export async function login(): Promise<void> {
     if (devMode || isRedirecting) return
     isRedirecting = true
 
     await userManager?.signinRedirect()
-}
-
-export async function handleCallback(): Promise<User | null> {
-    if (devMode) return createMockUser()
-
-    if (callbackPromise) return callbackPromise
-
-    callbackPromise = userManager!.signinRedirectCallback().then((oidcUser) => {
-        if (!oidcUser?.access_token) throw new Error("Dados de usuário inválidos")
-        return toUser(oidcUser)
-    })
-
-    return callbackPromise
 }
 
 export async function logout(): Promise<void> {
@@ -99,6 +77,28 @@ export async function logout(): Promise<void> {
         localStorage.clear()
         window.location.href = "/"
     }
+}
+
+export async function handleCallback(): Promise<User | null> {
+    if (devMode) return createMockUser()
+
+    if (callbackPromise) return callbackPromise
+
+    callbackPromise = userManager!.signinRedirectCallback().then((oidcUser) => {
+        if (!oidcUser?.access_token) throw new Error("Dados de usuário inválidos")
+        return toUser(oidcUser)
+    })
+
+    return callbackPromise
+}
+
+export async function getUser(): Promise<User | null> {
+    if (devMode) return createMockUser()
+
+    const oidcUser = await userManager?.getUser()
+    if (!oidcUser || oidcUser.expired) return null
+
+    return toUser(oidcUser)
 }
 
 function toUser(oidcUser: OidcUser): User {
