@@ -101,6 +101,10 @@ export async function getUser(): Promise<User | null> {
     return toUser(oidcUser)
 }
 
+export function isPublicRoute(pathname: string): boolean {
+    return publicRoutes.some((route) => pathname.startsWith(route))
+}
+
 function toUser(oidcUser: OidcUser): User {
     const profile = oidcUser.profile as UserProfile
 
@@ -109,10 +113,6 @@ function toUser(oidcUser: OidcUser): User {
         roles: profile.resource_access?.[clientId]?.roles ?? [],
         accessToken: oidcUser.access_token,
     }
-}
-
-export function isPublicRoute(pathname: string): boolean {
-    return publicRoutes.some((route) => pathname.startsWith(route))
 }
 
 function createMockUser(): User {
