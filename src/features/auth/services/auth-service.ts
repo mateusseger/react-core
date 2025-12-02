@@ -7,10 +7,15 @@ let devMode = false
 let mockRoles: string[] = ["user"]
 let publicRoutes: string[] = []
 let callbackPromise: Promise<User | null> | null = null
+let isRedirecting = false
+let isInitialized = false
 
 const DEFAULT_PUBLIC_ROUTES = ["/auth/callback", "/unauthorized"]
 
 export function initAuth(config: AuthConfig, isDevMode = false): void {
+    if (isInitialized) return
+    isInitialized = true
+
     devMode = isDevMode
     clientId = config.clientId
     mockRoles = config.devMockRoles ?? ["user"]
@@ -27,6 +32,7 @@ export function initAuth(config: AuthConfig, isDevMode = false): void {
         scope: config.scope ?? "openid profile email offline_access",
         userStore: new WebStorageStateStore({ store: window.localStorage }),
         automaticSilentRenew: true,
+        accessTokenExpiringNotificationTimeInSeconds: 5
     })
 
     setupAuthEvents()
@@ -44,13 +50,8 @@ function setupAuthEvents(): void {
 function handleCrossTabAuthSync(event: StorageEvent): void {
     if (!event.key?.startsWith("oidc.user:")) return
 
-    if (event.oldValue && !event.newValue) {
-        window.location.href = "/"
-    }
-
-    if (!event.oldValue && event.newValue) {
-        window.location.reload()
-    }
+    if (event.oldValue && !event.newValue) window.location.href = "/"
+    if (!event.oldValue && event.newValue) window.location.reload()
 }
 
 export async function getUser(): Promise<User | null> {
@@ -63,7 +64,9 @@ export async function getUser(): Promise<User | null> {
 }
 
 export async function login(): Promise<void> {
-    if (devMode) return
+    if (devMode || isRedirecting) return
+    isRedirecting = true
+
     await userManager?.signinRedirect()
 }
 
@@ -81,6 +84,9 @@ export async function handleCallback(): Promise<User | null> {
 }
 
 export async function logout(): Promise<void> {
+    if (isRedirecting) return
+    isRedirecting = true
+
     if (devMode) {
         localStorage.clear()
         window.location.href = "/"
