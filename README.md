@@ -290,6 +290,88 @@ Lista parcial de componentes:
 - **`useMobile()`**: Atalho para `useBreakpoint("md")`.
 - **`cn(...)`**: Utilitário para combinar classes Tailwind condicionalmente (clsx + tailwind-merge).
 
+### Validação e Máscaras
+
+A biblioteca fornece utilitários para validação e formatação de inputs comuns em aplicações brasileiras.
+
+#### Regex
+
+Expressões regulares pré-definidas para validação:
+
+```typescript
+import { REGEX, testRegex } from "@herval/react-core";
+
+// Uso direto
+const isValidEmail = REGEX.EMAIL.test("user@example.com");
+const isValidCPF = REGEX.CPF.test("123.456.789-00");
+
+// Ou via função helper
+const isValid = testRegex("PHONE_BR", "(11) 98765-4321");
+```
+
+**Principais regex disponíveis:**
+
+| Chave | Descrição | Exemplo |
+|-------|-----------|---------|
+| `EMAIL` | Email válido | `user@example.com` |
+| `PHONE_BR` | Telefone BR | `(11) 98765-4321` |
+| `CPF` | CPF formatado | `123.456.789-00` |
+| `CNPJ` | CNPJ formatado | `12.345.678/0001-90` |
+| `CEP` | CEP formatado | `01234-567` |
+
+#### Máscaras
+
+Funções para formatação automática de inputs:
+
+```typescript
+import { maskPhone, maskCPF, maskCurrency, applyMask, unmask } from "@herval/react-core";
+
+// Uso direto
+const phone = maskPhone("11987654321"); // "(11) 98765-4321"
+const cpf = maskCPF("12345678900"); // "123.456.789-00"
+const money = maskCurrency("123456"); // "R$ 1.234,56"
+
+// Via função genérica
+const formatted = applyMask("cnpj", "12345678000190"); // "12.345.678/0001-90"
+
+// Remover máscara
+const numbers = unmask("(11) 98765-4321"); // "11987654321"
+```
+
+**Principais máscaras disponíveis:**
+
+| Função | Descrição |
+|--------|-----------|
+| `maskPhone` | Telefone BR com DDD |
+| `maskCPF` | CPF com pontos e traço |
+| `maskCNPJ` | CNPJ completo |
+| `maskCEP` | CEP com traço |
+| `maskCurrency` | Moeda brasileira |
+
+#### Uso com React Hook Form + Zod
+
+```typescript
+import { z } from "zod";
+import { REGEX, maskPhone, unmask } from "@herval/react-core";
+
+const schema = z.object({
+  telefone: z
+    .string()
+    .regex(REGEX.PHONE_BR, "Telefone inválido")
+    .optional()
+    .or(z.literal("")),
+  cpf: z
+    .string()
+    .regex(REGEX.CPF, "CPF inválido"),
+});
+
+// No componente, aplique a máscara no onChange
+<Input
+  {...field}
+  onChange={(e) => field.onChange(maskPhone(e.target.value))}
+/>
+```
+
 ---
 
 ## 🛡️ Padrões e Boas Práticas
