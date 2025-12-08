@@ -1,5 +1,5 @@
 import { Fragment } from "react"
-import { Link, useLocation } from "react-router-dom"
+import { Link } from "react-router-dom"
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -9,27 +9,16 @@ import {
     BreadcrumbSeparator,
 } from "@/shared/components/ui/shadcn/breadcrumb"
 import { Home } from "lucide-react"
-
-function formatName(segment: string): string {
-    return segment.replace(/-/g, " ").replace(/^\w/, (c) => c.toUpperCase())
-}
+import { useBreadcrumbs } from "@/shared/hooks/use-breadcrumbs"
 
 export function AppBreadcrumb() {
-    const { pathname } = useLocation()
+    const items = useBreadcrumbs()
 
-    if (pathname === "/") return null
-
-    const segments = pathname.split("/").filter(Boolean)
-
-    const items = segments.map((segment, i) => ({
-        name: formatName(segment),
-        url: "/" + segments.slice(0, i + 1).join("/"),
-    }))
+    if (items.length === 0) return null
 
     return (
         <Breadcrumb>
             <BreadcrumbList>
-                {/* Home */}
                 <BreadcrumbItem>
                     <BreadcrumbLink asChild>
                         <Link to="/" className="flex items-center gap-1 text-xs sm:text-sm">
@@ -39,22 +28,24 @@ export function AppBreadcrumb() {
                     </BreadcrumbLink>
                 </BreadcrumbItem>
 
-                {/* Segmentos */}
-                {items.map((item, i) => {
-                    const isLast = i === items.length - 1
+                {items.map((item) => {
+                    const Icon = item.icon
+                    const showAsPage = item.isLast || !item.isNavigable
 
                     return (
-                        <Fragment key={item.url}>
+                        <Fragment key={item.path}>
                             <BreadcrumbSeparator />
                             <BreadcrumbItem>
-                                {isLast ? (
-                                    <BreadcrumbPage className="text-xs sm:text-sm truncate max-w-[150px] sm:max-w-none">
-                                        {item.name}
+                                {showAsPage ? (
+                                    <BreadcrumbPage className="flex items-center gap-1 text-xs sm:text-sm truncate max-w-[150px] sm:max-w-none">
+                                        {Icon && <Icon className="h-3.5 w-3.5 shrink-0" />}
+                                        <span>{item.label}</span>
                                     </BreadcrumbPage>
                                 ) : (
                                     <BreadcrumbLink asChild>
-                                        <Link to={item.url} className="text-xs sm:text-sm">
-                                            {item.name}
+                                        <Link to={item.path} className="flex items-center gap-1 text-xs sm:text-sm">
+                                            {Icon && <Icon className="h-3.5 w-3.5 shrink-0" />}
+                                            <span>{item.label}</span>
                                         </Link>
                                     </BreadcrumbLink>
                                 )}

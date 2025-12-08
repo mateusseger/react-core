@@ -146,9 +146,9 @@ import { appConfig } from "./app-config";
 export const router = createBrowserRouter([
   {
     element: (
-      <AppLayout 
-        menuItems={appConfig.menu} 
-        projectConfig={appConfig.project} 
+      <AppLayout
+        menuItems={appConfig.menu}
+        projectConfig={appConfig.project}
       />
     ),
     children: [
@@ -242,32 +242,60 @@ O `AppLayout` fornece uma estrutura responsiva completa "out-of-the-box":
 - **Sidebar**: Menu lateral colapsável, responsivo (drawer em mobile), com suporte a submenus e filtro de permissões.
 - **Header**: Breadcrumbs automáticos, avatar do usuário e logout.
 - **Page Transition**: Animações suaves de entrada/saída entre rotas.
-- **Detail Sections**: Sistema de navegação interna para páginas longas (scroll spy).
 
-#### Usando Detail Sections
+### Breadcrumb
 
-Para páginas de detalhe com muito conteúdo, use o sistema de seções:
+O sistema de breadcrumb gera navegação automática baseada nas rotas, com suporte a customização via `handle` do React Router.
+
+#### Configuração de Rota
 
 ```tsx
-import { Section } from "@herval/react-core";
-import { Info, Settings } from "lucide-react";
+import { Palette, Info } from "lucide-react";
 
-export function MinhaPaginaDetalhe() {
-  return (
-    <div className="space-y-8">
-      <Section id="geral" label="Geral" icon={Info}>
-        <Section.Header id="geral" label="Geral" icon={Info} />
-        <Card>...</Card>
-      </Section>
-
-      <Section id="config" label="Configurações" icon={Settings}>
-        <Section.Header id="config" label="Configurações" icon={Settings} />
-        <Card>...</Card>
-      </Section>
-    </div>
-  );
-}
+const routes = [
+  // Rota com label e ícone customizados
+  {
+    path: "/design-system",
+    element: <DesignSystemPage />,
+    handle: {
+      breadcrumbLabel: "Design System",
+      breadcrumbIcon: Palette,
+    },
+  },
+  // Rota com label dinâmico (usando params)
+  {
+    path: "/users/:id",
+    element: <UserDetailPage />,
+    handle: {
+      breadcrumbLabel: (params) => `Usuário #${params.id}`,
+      breadcrumbIcon: Info,
+    },
+  },
+  // Rota não navegável (apenas informativa)
+  {
+    path: "/settings",
+    element: <SettingsPage />,
+    handle: {
+      breadcrumbLabel: "Configurações",
+      breadcrumbNavigable: false,
+    },
+  },
+];
 ```
+
+#### Propriedades do Handle
+
+| Propriedade | Tipo | Default | Descrição |
+|-------------|------|---------|-----------|
+| `breadcrumbLabel` | `string \| ((params) => string)` | Auto-gerado do path | Label exibido no breadcrumb |
+| `breadcrumbIcon` | `LucideIcon` | - | Ícone opcional ao lado do label |
+| `breadcrumbNavigable` | `boolean` | `true` | Se `false`, não será um link clicável |
+
+#### Comportamento Padrão
+
+- Rotas sem `handle` geram labels automaticamente formatando o path (ex: `/to-do-list` → "To Do List")
+- O item "Início" (Home) é sempre exibido como primeiro item
+- O último item do breadcrumb é sempre renderizado como texto (não clicável)
 
 ### Componentes UI
 
@@ -400,14 +428,13 @@ const schema = z.object({
 | `menuItems` | `MenuItem[]` | Sim | Estrutura do menu lateral |
 | `projectConfig` | `ProjectConfig` | Sim | Nome do projeto, versão e logo opcional |
 
-### `Section` Props
+### `BreadcrumbHandle` Props
 
 | Prop | Tipo | Obrigatório | Descrição |
 |------|------|-------------|-----------|
-| `id` | `string` | Sim | ID único para âncora e URL |
-| `label` | `string` | Sim | Nome exibido na sidebar de navegação |
-| `icon` | `LucideIcon` | Não | Ícone opcional |
-| `children` | `ReactNode` | Sim | Conteúdo da seção |
+| `breadcrumbLabel` | `string \| ((params) => string)` | Não | Label customizado do breadcrumb |
+| `breadcrumbIcon` | `LucideIcon` | Não | Ícone ao lado do label |
+| `breadcrumbNavigable` | `boolean` | Não | Se `false`, não é clicável (default: `true`) |
 
 ---
 
