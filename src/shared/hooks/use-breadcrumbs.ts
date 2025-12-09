@@ -31,9 +31,17 @@ export function useBreadcrumbs(): BreadcrumbItem[] {
     const params = useParams()
 
     const items: BreadcrumbItem[] = []
+    const seenPaths = new Set<string>()
 
     const filteredMatches = matches.filter((match) => {
         if (!match.pathname || match.pathname === "/") return false
+
+        const handle = match.handle as BreadcrumbHandle | undefined
+        if (!handle?.breadcrumbLabel) return false
+
+        if (seenPaths.has(match.pathname)) return false
+        seenPaths.add(match.pathname)
+
         return true
     })
 
