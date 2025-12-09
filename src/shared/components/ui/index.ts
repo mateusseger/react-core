@@ -43,6 +43,3 @@ export * from "./shadcn/textarea"
 export * from "./shadcn/toggle"
 export * from "./shadcn/toggle-group"
 export * from "./shadcn/tooltip"
-
-// CUSTOM
-export * from "./custom/detail-page-skeleton"
