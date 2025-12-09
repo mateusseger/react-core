@@ -30,5 +30,7 @@ export interface AuthContextValue {
     user: User | null
     isAuthenticated: boolean
     isLoading: boolean
+    login: () => Promise<void>
     logout: () => Promise<void>
+    getAccessToken: () => Promise<string | null>
 }

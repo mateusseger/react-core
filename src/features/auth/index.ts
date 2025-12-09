@@ -7,6 +7,4 @@ export { ProtectedRoute } from "./components/protected-route"
 
 export { hasRole, hasAnyRole, hasAllRoles, getUserDisplayName, getUserInitials } from "./utils/auth-utils"
 
-export { handleCallback, logout } from "./services/auth-service"
-
 export { authRoutes } from "./routes"

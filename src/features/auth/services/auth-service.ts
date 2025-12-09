@@ -101,6 +101,14 @@ export async function getUser(): Promise<User | null> {
     return toUser(oidcUser)
 }
 
+export async function getAccessToken(): Promise<string | null> {
+    if (devMode) return "mock_token"
+
+    const user = await getUser();
+
+    return user?.accessToken ?? null
+}
+
 export function isPublicRoute(pathname: string): boolean {
     return publicRoutes.some((route) => pathname.startsWith(route))
 }

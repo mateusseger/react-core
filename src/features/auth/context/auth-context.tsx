@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState, type ReactNode } from "react"
 import { Loader2 } from "lucide-react"
-import { getUser, login, logout, initAuth, isPublicRoute } from "../services/auth-service"
+import { getUser, login, logout, getAccessToken, initAuth, isPublicRoute } from "../services/auth-service"
 import { Card, CardContent } from "@/shared/components/ui/shadcn/card"
 import type { User, AuthConfig, AuthContextValue } from "../types/auth-types"
 
@@ -47,7 +47,7 @@ export function AuthProvider({ children, config, devMode = false }: AuthProvider
     }
 
     return (
-        <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, logout }}>
+        <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, logout, getAccessToken }}>
             {children}
         </AuthContext.Provider>
     )
