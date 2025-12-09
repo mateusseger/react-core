@@ -1,13 +1,14 @@
+import { useMemo } from "react"
 import { useMatches, useParams } from "react-router-dom"
 import type { LucideIcon } from "lucide-react"
 
 interface BreadcrumbHandle {
-    breadcrumbLabel?: string | ((params: Record<string, string>) => string)
+    breadcrumbLabel: string | ((params: Record<string, string>) => string)
     breadcrumbIcon?: LucideIcon
     breadcrumbNavigable?: boolean
 }
 
-interface BreadcrumbItem {
+export interface BreadcrumbItem {
     label: string
     path: string
     icon?: LucideIcon
@@ -15,61 +16,47 @@ interface BreadcrumbItem {
     isLast: boolean
 }
 
-function formatSegment(segment: string): string {
-    return segment
-        .replace(/-/g, " ")
-        .replace(/\b\w/g, (char) => char.toUpperCase())
+type RouteParams = Record<string, string>
+
+function hasBreadcrumbHandle(handle: unknown): handle is BreadcrumbHandle {
+    return (
+        typeof handle === "object" &&
+        handle !== null &&
+        "breadcrumbLabel" in handle
+    )
 }
 
-function extractLastSegment(pathname: string): string {
-    const segments = pathname.split("/").filter(Boolean)
-    return segments[segments.length - 1] || ""
+function resolveLabel(
+    breadcrumbLabel: BreadcrumbHandle["breadcrumbLabel"],
+    params: RouteParams
+): string {
+    return typeof breadcrumbLabel === "function"
+        ? breadcrumbLabel(params)
+        : breadcrumbLabel
 }
 
 export function useBreadcrumbs(): BreadcrumbItem[] {
     const matches = useMatches()
-    const params = useParams()
+    const params = useParams() as RouteParams
 
-    const items: BreadcrumbItem[] = []
-    const seenPaths = new Set<string>()
+    return useMemo(() => {
+        const validMatches = matches.filter(
+            (match) =>
+                match.pathname &&
+                match.pathname !== "/" &&
+                hasBreadcrumbHandle(match.handle)
+        )
 
-    const filteredMatches = matches.filter((match) => {
-        if (!match.pathname || match.pathname === "/") return false
+        return validMatches.map((match, index) => {
+            const handle = match.handle as BreadcrumbHandle
 
-        const handle = match.handle as BreadcrumbHandle | undefined
-        if (!handle?.breadcrumbLabel) return false
-
-        if (seenPaths.has(match.pathname)) return false
-        seenPaths.add(match.pathname)
-
-        return true
-    })
-
-    filteredMatches.forEach((match, index) => {
-        const handle = match.handle as BreadcrumbHandle | undefined
-        const isLast = index === filteredMatches.length - 1
-
-        let label: string
-        if (handle?.breadcrumbLabel) {
-            label =
-                typeof handle.breadcrumbLabel === "function"
-                    ? handle.breadcrumbLabel(params as Record<string, string>)
-                    : handle.breadcrumbLabel
-        } else {
-            const segment = extractLastSegment(match.pathname)
-            label = formatSegment(segment)
-        }
-
-        const isNavigable = handle?.breadcrumbNavigable !== false
-
-        items.push({
-            label,
-            path: match.pathname,
-            icon: handle?.breadcrumbIcon,
-            isNavigable,
-            isLast,
+            return {
+                label: resolveLabel(handle.breadcrumbLabel, params),
+                path: match.pathname,
+                icon: handle.breadcrumbIcon,
+                isNavigable: handle.breadcrumbNavigable !== false,
+                isLast: index === validMatches.length - 1,
+            }
         })
-    })
-
-    return items
+    }, [matches, params])
 }

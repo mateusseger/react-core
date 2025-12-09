@@ -285,15 +285,16 @@ const routes = [
 
 #### Propriedades do Handle
 
-| Propriedade | Tipo | Default | Descrição |
-|-------------|------|---------|-----------|
-| `breadcrumbLabel` | `string \| ((params) => string)` | Auto-gerado do path | Label exibido no breadcrumb |
-| `breadcrumbIcon` | `LucideIcon` | - | Ícone opcional ao lado do label |
-| `breadcrumbNavigable` | `boolean` | `true` | Se `false`, não será um link clicável |
+| Propriedade | Tipo | Obrigatório | Descrição |
+|-------------|------|-------------|-----------|
+| `breadcrumbLabel` | `string \| ((params) => string)` | Sim | Label exibido no breadcrumb |
+| `breadcrumbIcon` | `LucideIcon` | Não | Ícone opcional ao lado do label |
+| `breadcrumbNavigable` | `boolean` | Não | Se `false`, não será um link clicável (default: `true`) |
 
 #### Comportamento Padrão
 
-- Rotas sem `handle` geram labels automaticamente formatando o path (ex: `/to-do-list` → "To Do List")
+- Apenas rotas com `breadcrumbLabel` definido aparecem no breadcrumb
+- Rotas sem `handle` ou sem `breadcrumbLabel` são ignoradas
 - O item "Início" (Home) é sempre exibido como primeiro item
 - O último item do breadcrumb é sempre renderizado como texto (não clicável)
 
@@ -432,7 +433,7 @@ const schema = z.object({
 
 | Prop | Tipo | Obrigatório | Descrição |
 |------|------|-------------|-----------|
-| `breadcrumbLabel` | `string \| ((params) => string)` | Não | Label customizado do breadcrumb |
+| `breadcrumbLabel` | `string \| ((params) => string)` | Sim | Label exibido no breadcrumb (rotas sem este campo são ignoradas) |
 | `breadcrumbIcon` | `LucideIcon` | Não | Ícone ao lado do label |
 | `breadcrumbNavigable` | `boolean` | Não | Se `false`, não é clicável (default: `true`) |
 
