@@ -14,17 +14,20 @@ export function filterMenuItemsByRoles(
     items: MenuItem[],
     userRoles: string[]
 ): MenuItem[] {
-    return items
-        .filter((item) => hasRoleAccess(item, userRoles))
-        .map((item) => {
-            if (!item.subItems) {
-                return item
-            }
+    return items.reduce<MenuItem[]>((visibleItems, item) => {
+        if (!hasRoleAccess(item, userRoles)) {
+            return visibleItems
+        }
 
-            const visibleSubItems = item.subItems.filter((subItem) =>
-                hasRoleAccess(subItem, userRoles)
-            )
+        const visibleSubItems = item.subItems?.filter((subItem) =>
+            hasRoleAccess(subItem, userRoles)
+        )
 
-            return { ...item, subItems: visibleSubItems }
-        })
+        if (!item.url && visibleSubItems?.length === 0) {
+            return visibleItems
+        }
+
+        visibleItems.push(visibleSubItems ? { ...item, subItems: visibleSubItems } : item)
+        return visibleItems
+    }, [])
 }

@@ -5,6 +5,7 @@ import { AppPageTransition } from "./app-page-transition"
 import { SidebarProvider } from "../ui/shadcn/sidebar"
 import { Toaster } from "../ui/shadcn/sonner"
 import { cn } from "@/shared/utils/cn"
+import { useSidebarMenu } from "@/shared/hooks/use-sidebar-menu"
 import type { MenuItem, ProjectConfig } from "@/shared/types/config"
 
 export interface AppLayoutProps {
@@ -13,12 +14,16 @@ export interface AppLayoutProps {
 }
 
 export const AppLayout = memo(function AppLayout({ menuItems, projectConfig }: AppLayoutProps) {
+    const { hasVisibleItems } = useSidebarMenu(menuItems)
+
     return (
         <SidebarProvider>
-            <AppSidebarMenu menuItems={menuItems} projectConfig={projectConfig} />
+            {hasVisibleItems && (
+                <AppSidebarMenu menuItems={menuItems} projectConfig={projectConfig} />
+            )}
 
             <div className="flex-1 flex flex-col min-w-0">
-                <AppHeader />
+                <AppHeader showSidebarTrigger={hasVisibleItems} projectConfig={projectConfig} />
 
                 <main className="flex-1 min-w-0">
                     <div className={cn(

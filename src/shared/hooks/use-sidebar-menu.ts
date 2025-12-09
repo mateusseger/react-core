@@ -11,6 +11,7 @@ export function useSidebarMenu(allMenuItems: MenuItem[]) {
 
     const userRoles = useMemo(() => user?.roles ?? [], [user])
     const menuItems = useMemo(() => filterMenuItemsByRoles(allMenuItems, userRoles), [allMenuItems, userRoles])
+    const hasVisibleItems = useMemo(() => menuItems.length > 0, [menuItems])
 
     const isSubRoute = useMemo(
         () => menuItems.flatMap((m) => m.subItems ?? []).some((sub) => sub.url === currentPath),
@@ -43,6 +44,7 @@ export function useSidebarMenu(allMenuItems: MenuItem[]) {
 
     return {
         menuItems,
+        hasVisibleItems,
         openSubmenu,
         currentPath,
         getItemState,

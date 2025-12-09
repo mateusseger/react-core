@@ -1,7 +1,9 @@
 import { Button } from "@/shared/components/ui/shadcn/button"
 import { useAuth } from "@/features/auth"
-import { LogOut } from "lucide-react"
+import { useTheme } from "@/features/themes"
+import { LogOut, Moon, Sun } from "lucide-react"
 import { AppBreadcrumb } from "./app-breadcrumb"
+import { AppLogo } from "./app-logo"
 import { Avatar, AvatarFallback } from "@/shared/components/ui/shadcn/avatar"
 import {
     DropdownMenu,
@@ -15,9 +17,16 @@ import { SidebarTrigger } from "@/shared/components/ui/shadcn/sidebar"
 import { Separator } from "@/shared/components/ui/shadcn/separator"
 import { getUserInitials, getUserDisplayName } from "@/features/auth"
 import { cn } from "@/shared/utils/cn"
+import type { ProjectConfig } from "@/shared/types/config"
 
-export function AppHeader() {
+export interface AppHeaderProps {
+    showSidebarTrigger?: boolean
+    projectConfig?: ProjectConfig
+}
+
+export function AppHeader({ showSidebarTrigger = true, projectConfig }: AppHeaderProps) {
     const { user, logout } = useAuth()
+    const { theme, toggleMode } = useTheme()
 
     const handleLogout = async () => {
         try {
@@ -40,8 +49,17 @@ export function AppHeader() {
                 "px-3 sm:px-4",
                 "gap-2 sm:gap-4"
             )}>
-                <SidebarTrigger className="cursor-pointer" />
-                <Separator orientation="vertical" className="hidden sm:block data-[orientation=vertical]:h-4" />
+                {showSidebarTrigger ? (
+                    <>
+                        <SidebarTrigger className="cursor-pointer h-8 w-8 sm:h-9 sm:w-9" />
+                        <Separator orientation="vertical" className="hidden sm:block data-[orientation=vertical]:h-4" />
+                    </>
+                ) : projectConfig && (
+                    <AppLogo
+                        projectConfig={projectConfig}
+                        className="hover:bg-transparent px-0 sm:px-0"
+                    />
+                )}
                 <div className="flex-1 hidden sm:block">
                     <AppBreadcrumb />
                 </div>
@@ -50,6 +68,19 @@ export function AppHeader() {
                     "flex items-center",
                     "gap-2 sm:gap-3"
                 )}>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={toggleMode}
+                        className="h-8 w-8 sm:h-9 sm:w-9 cursor-pointer"
+                    >
+                        {theme.mode === "light" ? (
+                            <Moon className="h-4 w-4" />
+                        ) : (
+                            <Sun className="h-4 w-4" />
+                        )}
+                    </Button>
+
                     {user && (
                         <DropdownMenu modal={false}>
                             <DropdownMenuTrigger asChild>

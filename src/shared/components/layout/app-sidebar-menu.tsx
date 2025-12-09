@@ -1,10 +1,9 @@
-import { Link } from "react-router-dom"
 import { useCallback } from "react"
-import { Moon, Sun, ChevronRight } from "lucide-react"
+import { ChevronRight } from "lucide-react"
+import { Link } from "react-router-dom"
 import {
     Sidebar,
     SidebarContent,
-    SidebarFooter,
     SidebarGroup,
     SidebarGroupContent,
     SidebarHeader,
@@ -14,19 +13,12 @@ import {
     SidebarRail,
     useSidebar,
 } from "../ui/shadcn/sidebar"
-import { Button } from "../ui/shadcn/button"
-import { useTheme } from "@/features/themes"
 import { cn } from "@/shared/utils/cn"
 import { useSidebarMenu } from "@/shared/hooks/use-sidebar-menu"
 import { useBreakpoint } from "@/shared/hooks/use-breakpoint"
 import { AppSidebarSubmenu } from "./app-sidebar-submenu"
+import { AppLogo } from "./app-logo"
 import type { MenuItem, ProjectConfig } from "@/shared/types/config"
-import logoHervalLight from "@/shared/assets/logos/herval-light.png"
-import logoHervalDark from "@/shared/assets/logos/herval-dark.png"
-import logoTaqiLight from "@/shared/assets/logos/taqi-light.svg"
-import logoTaqiDark from "@/shared/assets/logos/taqi-dark.svg"
-import logoIplaceLight from "@/shared/assets/logos/iplace-light.svg"
-import logoIplaceDark from "@/shared/assets/logos/iplace-dark.svg"
 
 export interface AppSidebarMenuProps {
     menuItems: MenuItem[]
@@ -34,7 +26,6 @@ export interface AppSidebarMenuProps {
 }
 
 export function AppSidebarMenu({ menuItems: allMenuItems, projectConfig }: AppSidebarMenuProps) {
-    const { theme, toggleMode } = useTheme()
     const { isMobile, setOpenMobile } = useSidebar()
     const {
         menuItems,
@@ -63,24 +54,6 @@ export function AppSidebarMenu({ menuItems: allMenuItems, projectConfig }: AppSi
         }
     }
 
-    // Logos por tema e modo (light/dark)
-    const logos = {
-        herval: {
-            light: logoHervalLight,
-            dark: logoHervalDark,
-        },
-        taqi: {
-            light: logoTaqiLight,
-            dark: logoTaqiDark,
-        },
-        iplace: {
-            light: logoIplaceLight,
-            dark: logoIplaceDark,
-        },
-    }
-
-    const currentLogo = projectConfig.logo || logos[theme.name][theme.mode]
-
     // Fecha o sidebar mobile ao clicar no logo/título
     const handleLogoClick = () => {
         if (isMobile) {
@@ -93,23 +66,16 @@ export function AppSidebarMenu({ menuItems: allMenuItems, projectConfig }: AppSi
             {/* Barra Lateral Principal */}
             <Sidebar collapsible="icon">
                 <SidebarHeader className="border-b p-0">
-                    <Link
-                        to="/"
+                    <AppLogo
+                        projectConfig={projectConfig}
                         onClick={handleLogoClick}
-                        className={cn(
-                            "flex items-center gap-2 sm:gap-3 transition-all duration-200 ease-linear hover:bg-accent/50 cursor-pointer",
-                            "h-12 sm:h-14 px-3 sm:px-4",
-                            "group-data-[collapsible=icon]:px-1"
-                        )}
-                    >
-                        <img
-                            src={currentLogo}
-                            alt="Logo"
-                            className="h-5 sm:h-6 group-data-[collapsible=icon]:object-contain"
-                        />
-
-                        <h1 className="text-xs sm:text-sm font-bold group-data-[collapsible=icon]:hidden">{projectConfig.name}</h1>
-                    </Link>
+                        className="
+                        group-data-[collapsible=icon]:px-1
+                        [&_img]:group-data-[collapsible=icon]:object-contain
+                        [&_h1]:group-data-[collapsible=icon]:hidden
+                        hover:bg-accent/50
+                        px-3 sm:px-4"
+                    />
                 </SidebarHeader>
 
                 <SidebarContent>
@@ -167,29 +133,6 @@ export function AppSidebarMenu({ menuItems: allMenuItems, projectConfig }: AppSi
                         </SidebarGroupContent>
                     </SidebarGroup>
                 </SidebarContent>
-
-                <SidebarFooter className="border-t p-0">
-                    <div className={cn(
-                        "flex items-center justify-between group-data-[collapsible=icon]:justify-center",
-                        "h-12 sm:h-14 px-3 sm:px-4"
-                    )}>
-                        <span className="text-xs sm:text-sm text-muted-foreground group-data-[collapsible=icon]:hidden">
-                            Aparência
-                        </span>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={toggleMode}
-                            className="h-8 w-8 shrink-0"
-                        >
-                            {theme.mode === "light" ? (
-                                <Moon className="h-4 w-4" />
-                            ) : (
-                                <Sun className="h-4 w-4" />
-                            )}
-                        </Button>
-                    </div>
-                </SidebarFooter>
 
                 <SidebarRail />
             </Sidebar>
