@@ -239,9 +239,46 @@ export const router = createBrowserRouter([
 
 O `AppLayout` fornece uma estrutura responsiva completa "out-of-the-box":
 
-- **Sidebar**: Menu lateral colapsável, responsivo (drawer em mobile), com suporte a submenus e filtro de permissões.
-- **Header**: Breadcrumbs automáticos, avatar do usuário e logout.
+- **Sidebar**: Menu lateral colapsável, responsivo (drawer em mobile), com suporte a submenus e filtro de permissões baseado em roles.
+- **Header**: Breadcrumbs automáticos, toggle de tema (light/dark), avatar do usuário e logout.
 - **Page Transition**: Animações suaves de entrada/saída entre rotas.
+
+#### Controle de Visibilidade por Roles
+
+O sistema de menu filtra automaticamente os itens baseado nas roles do usuário:
+
+- **Itens sem acesso**: Itens de menu que o usuário não tem permissão (via `roles`) não são renderizados.
+- **Grupos vazios**: Se um grupo de menu (com `subItems`) ficar sem itens visíveis após a filtragem, o grupo inteiro é ocultado.
+- **Sidebar oculto**: Se o usuário não tiver acesso a **nenhum** item do menu, o sidebar inteiro não é renderizado e o logo do projeto é exibido diretamente no header.
+
+```typescript
+// Exemplo: menu com controle de roles
+menu: [
+  {
+    name: "Home",
+    url: "/",
+    icon: Home,
+    // Sem roles = visível para todos
+  },
+  {
+    name: "Design System",
+    url: "/design-system",
+    icon: Palette,
+    roles: ["designer"], // Visível apenas para designers
+  },
+  {
+    name: "Administração",
+    icon: Settings,
+    roles: ["admin"], // Grupo visível apenas para admins
+    subItems: [
+      { name: "Usuários", url: "/admin/users", icon: Users },
+      { name: "Relatórios", url: "/admin/reports", icon: FileText, roles: ["reports"] },
+    ]
+  }
+]
+```
+
+> **Importante**: Para proteger completamente uma rota, defina as `roles` tanto no item de menu quanto na rota com `ProtectedRoute`. O menu controla a visibilidade, enquanto o `ProtectedRoute` bloqueia o acesso direto via URL.
 
 ### Breadcrumb
 
