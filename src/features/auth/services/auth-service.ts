@@ -113,12 +113,30 @@ export function isPublicRoute(pathname: string): boolean {
     return publicRoutes.some((route) => pathname.startsWith(route))
 }
 
-function toUser(oidcUser: OidcUser): User {
-    const profile = oidcUser.profile as UserProfile
+function decodeAccessToken(token: string): Record<string, unknown> | null {
+    try {
+        const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')
+        return JSON.parse(atob(base64))
+    } catch {
+        return null
+    }
+}
 
+function extractRoles(accessToken: string): string[] {
+    const payload = decodeAccessToken(accessToken)
+    if (!payload) return []
+
+    const resourceAccess = payload.resource_access as Record<string, { roles: string[] }> | undefined
+    const clientRoles = resourceAccess?.[clientId]?.roles
+    if (clientRoles?.length) return clientRoles
+
+    return []
+}
+
+function toUser(oidcUser: OidcUser): User {
     return {
-        profile,
-        roles: profile.resource_access?.[clientId]?.roles ?? [],
+        profile: oidcUser.profile as UserProfile,
+        roles: extractRoles(oidcUser.access_token),
         accessToken: oidcUser.access_token,
     }
 }
