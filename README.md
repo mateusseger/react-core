@@ -1,5 +1,6 @@
 # @herval/react-core
 
+![PNPM](https://img.shields.io/badge/pnpm-enabled-F69220?logo=pnpm)
 ![NPM Version](https://img.shields.io/npm/v/@herval/react-core)
 ![License](https://img.shields.io/npm/l/@herval/react-core)
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
@@ -29,11 +30,11 @@ Biblioteca React Core desenvolvida para padronizar e acelerar o desenvolvimento 
 ## 🚀 Instalação
 
 ```bash
+pnpm add @herval/react-core
+# ou
 npm install @herval/react-core
 # ou
 yarn add @herval/react-core
-# ou
-pnpm add @herval/react-core
 ```
 
 Certifique-se de importar o CSS global no ponto de entrada da sua aplicação (ex: `main.tsx` ou `App.tsx`):
