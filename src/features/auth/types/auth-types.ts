@@ -6,7 +6,6 @@ export interface UserProfile {
     given_name?: string
     family_name?: string
     picture?: string
-    resource_access?: Record<string, { roles: string[] }>
     [key: string]: unknown
 }
 

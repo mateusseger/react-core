@@ -126,11 +126,9 @@ function extractRoles(accessToken: string): string[] {
     const payload = decodeAccessToken(accessToken)
     if (!payload) return []
 
-    // 1. userRoles (custom claim)
     const userRoles = payload.userRoles as string[] | undefined
     if (userRoles?.length) return userRoles
 
-    // 2. resource_access[clientId].roles
     const resourceAccess = payload.resource_access as Record<string, { roles: string[] }> | undefined
     const clientRoles = resourceAccess?.[clientId]?.roles
     if (clientRoles?.length) return clientRoles
