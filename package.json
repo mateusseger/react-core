@@ -6,6 +6,9 @@
     "main": "./dist/index.cjs",
     "module": "./dist/index.js",
     "types": "./dist/index.d.ts",
+    "publishConfig": {
+        "registry": "https://pkgs.dev.azure.com/H-Engenharia-TIC/_packaging/herval-npm/npm/registry/"
+    },
     "exports": {
         ".": {
             "types": "./dist/index.d.ts",
