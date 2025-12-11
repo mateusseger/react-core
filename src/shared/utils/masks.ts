@@ -1,4 +1,4 @@
-export function maskPhone(value: string): string {
+﻿export function maskPhone(value: string): string {
     const numbers = value.replace(/\D/g, "").slice(0, 11)
     if (numbers.length <= 2) return numbers.length ? `(${numbers}` : ""
     if (numbers.length <= 6) return `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`
@@ -35,6 +35,22 @@ export function maskCEP(value: string): string {
     const numbers = value.replace(/\D/g, "").slice(0, 8)
     if (numbers.length <= 5) return numbers
     return `${numbers.slice(0, 5)}-${numbers.slice(5)}`
+}
+
+export function maskPIS(value: string): string {
+    const numbers = value.replace(/\D/g, "").slice(0, 11)
+    if (numbers.length <= 3) return numbers
+    if (numbers.length <= 8) return `${numbers.slice(0, 3)}.${numbers.slice(3)}`
+    if (numbers.length <= 10) return `${numbers.slice(0, 3)}.${numbers.slice(3, 8)}.${numbers.slice(8)}`
+    return `${numbers.slice(0, 3)}.${numbers.slice(3, 8)}.${numbers.slice(8, 10)}-${numbers.slice(10)}`
+}
+
+export function maskRG(value: string): string {
+    const chars = value.replace(/[^0-9Xx]/g, "").slice(0, 9)
+    if (chars.length <= 2) return chars
+    if (chars.length <= 5) return `${chars.slice(0, 2)}.${chars.slice(2)}`
+    if (chars.length <= 8) return `${chars.slice(0, 2)}.${chars.slice(2, 5)}.${chars.slice(5)}`
+    return `${chars.slice(0, 2)}.${chars.slice(2, 5)}.${chars.slice(5, 8)}-${chars.slice(8)}`
 }
 
 export function maskDate(value: string): string {
@@ -91,6 +107,8 @@ export const MASKS = {
     cpf: maskCPF,
     cnpj: maskCNPJ,
     cep: maskCEP,
+    pis: maskPIS,
+    rg: maskRG,
     date: maskDate,
     time: maskTime,
     creditCard: maskCreditCard,
