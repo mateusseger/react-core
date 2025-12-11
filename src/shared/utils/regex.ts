@@ -25,7 +25,8 @@ export const REGEX = {
     UUID: /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
     HEX_COLOR: /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/,
     LICENSE_PLATE_BR: /^[A-Z]{3}-?\d[A-Z0-9]\d{2}$/,
-    RG: /^[\d.]{5,14}$/,
+    RG: /^\d{1,2}\.\d{3}\.\d{3}-\d{1}$/,
+    PIS: /^\d{3}\.\d{5}\.\d{2}-\d{1}$/,
 } as const
 
 export type RegexKey = keyof typeof REGEX
