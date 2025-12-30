@@ -67,20 +67,14 @@ export async function login(): Promise<void> {
 }
 
 export async function logout(): Promise<void> {
-    if (isRedirecting) return
+    if (isRedirecting || devMode) return
     isRedirecting = true
-
-    if (devMode) {
-        localStorage.clear()
-        window.location.href = "/"
-        return
-    }
 
     try {
         await userManager?.signoutRedirect()
-    } catch {
-        localStorage.clear()
-        window.location.href = "/"
+    } catch (error) {
+        isRedirecting = false
+        throw error
     }
 }
 
