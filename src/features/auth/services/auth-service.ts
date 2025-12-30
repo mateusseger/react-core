@@ -58,7 +58,12 @@ export async function login(): Promise<void> {
     if (devMode || isRedirecting) return
     isRedirecting = true
 
-    await userManager?.signinRedirect()
+    try {
+        await userManager?.signinRedirect()
+    } catch (error) {
+        isRedirecting = false
+        throw error
+    }
 }
 
 export async function logout(): Promise<void> {
