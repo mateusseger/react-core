@@ -12,10 +12,10 @@ import {
 
 import { cn } from '@/shared/utils'
 
-interface DatePickerProps {
+export interface DatePickerProps {
     id?: string
     value?: string // formato ISO: YYYY-MM-DD
-    onChange?: (value: string | undefined) => void
+    onValueChange?: (value: string | undefined) => void
     placeholder?: string
     disabled?: boolean
     className?: string
@@ -24,7 +24,7 @@ interface DatePickerProps {
 export function DatePicker({
     id,
     value,
-    onChange,
+    onValueChange,
     placeholder = 'Selecione uma data',
     disabled,
     className,
@@ -36,9 +36,9 @@ export function DatePicker({
     const handleSelect = (date: Date | undefined) => {
         if (date) {
             const isoDate = date.toISOString().split('T')[0]
-            onChange?.(isoDate)
+            onValueChange?.(isoDate)
         } else {
-            onChange?.(undefined)
+            onValueChange?.(undefined)
         }
         setOpen(false)
     }
