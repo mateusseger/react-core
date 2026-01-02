@@ -19,18 +19,18 @@ import {
 
 import { cn } from '@/shared/utils'
 
-export interface ComboboxOption<T = string> {
-    value: T
+export interface ComboboxOption {
+    value: string
     label: string
     group?: string
     renderItem?: () => ReactNode
 }
 
-export interface ComboboxProps<T = string> {
+export interface ComboboxProps {
     id?: string
-    value?: T
-    onValueChange: (value: T | undefined) => void
-    options: ComboboxOption<T>[]
+    value?: string
+    onValueChange: (value: string | undefined) => void
+    options: ComboboxOption[]
     placeholder?: string
     searchPlaceholder?: string
     emptyMessage?: string
@@ -42,7 +42,7 @@ export interface ComboboxProps<T = string> {
     searchable?: boolean
 }
 
-export function Combobox<T = string>({
+export function Combobox({
     id,
     value,
     onValueChange,
@@ -56,7 +56,7 @@ export function Combobox<T = string>({
     isLoading = false,
     loadingMessage = 'Carregando...',
     searchable = true,
-}: ComboboxProps<T>) {
+}: ComboboxProps) {
     const [open, setOpen] = useState(false)
 
     const optionsByGroup = useMemo(
@@ -70,7 +70,7 @@ export function Combobox<T = string>({
                     acc[groupKey].push(option)
                     return acc
                 },
-                {} as Record<string, ComboboxOption<T>[]>
+                {} as Record<string, ComboboxOption[]>
             ),
         [options]
     )
@@ -83,7 +83,7 @@ export function Combobox<T = string>({
     const hasGroups = useMemo(() => options.some((opt) => opt.group), [options])
 
     const handleSelect = useCallback(
-        (optionValue: T) => {
+        (optionValue: string) => {
             const newValue = allowClear && optionValue === value ? undefined : optionValue
             onValueChange(newValue)
             setOpen(false)
@@ -92,10 +92,10 @@ export function Combobox<T = string>({
     )
 
     const renderCommandItem = useCallback(
-        (option: ComboboxOption<T>, index: number) => (
+        (option: ComboboxOption, index: number) => (
             <CommandItem
-                key={`${String(option.value)}-${index}`}
-                value={String(option.value)}
+                key={`${option.value}-${index}`}
+                value={option.value}
                 keywords={[option.label]}
                 onSelect={() => handleSelect(option.value)}
                 className="pr-8"
@@ -150,7 +150,7 @@ export function Combobox<T = string>({
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="w-(--radix-popover-trigger-width) p-0">
-                <Command shouldFilter={searchable} defaultValue={value ? String(value) : undefined}>
+                <Command shouldFilter={searchable} defaultValue={value}>
                     {searchable && <CommandInput placeholder={searchPlaceholder} disabled={isLoading} />}
                     <CommandList>
                         <CommandEmpty>{isLoading ? loadingMessage : emptyMessage}</CommandEmpty>
