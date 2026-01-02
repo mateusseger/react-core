@@ -46,3 +46,4 @@ export * from "./shadcn/tooltip"
 
 // CUSTOM
 export * from "./custom/date-picker"
+export * from "./custom/combobox"
