@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from 'react'
 import type { ReactNode } from 'react'
 
-import { Check, ChevronsUpDown } from 'lucide-react'
+import { Check, ChevronDownIcon } from 'lucide-react'
 
 import {
     Button,
@@ -39,6 +39,7 @@ export interface ComboboxProps<T = string> {
     allowClear?: boolean
     isLoading?: boolean
     loadingMessage?: string
+    searchable?: boolean
 }
 
 export function Combobox<T = string>({
@@ -54,6 +55,7 @@ export function Combobox<T = string>({
     allowClear = true,
     isLoading = false,
     loadingMessage = 'Carregando...',
+    searchable = true,
 }: ComboboxProps<T>) {
     const [open, setOpen] = useState(false)
 
@@ -93,16 +95,22 @@ export function Combobox<T = string>({
         (option: ComboboxOption<T>, index: number) => (
             <CommandItem
                 key={`${String(option.value)}-${index}`}
-                value={option.label}
+                value={String(option.value)}
+                keywords={[option.label]}
                 onSelect={() => handleSelect(option.value)}
+                className="pr-8"
             >
-                {option.renderItem ? option.renderItem() : <span>{option.label}</span>}
-                <Check
-                    className={cn(
-                        'ml-auto h-4 w-4',
-                        value === option.value ? 'opacity-100' : 'opacity-0'
-                    )}
-                />
+                <span>
+                    {option.renderItem ? option.renderItem() : option.label}
+                </span>
+                <span className="absolute right-2 flex size-3.5 items-center justify-center">
+                    <Check
+                        className={cn(
+                            'size-4',
+                            value === option.value ? 'opacity-100' : 'opacity-0'
+                        )}
+                    />
+                </span>
             </CommandItem>
         ),
         [handleSelect, value]
@@ -122,7 +130,7 @@ export function Combobox<T = string>({
                     {isLoading ? (
                         <>
                             <span className="text-muted-foreground">{loadingMessage}</span>
-                            <Spinner className="ml-2 h-4 w-4 shrink-0 animate-spin" />
+                            <Spinner className="size-4 shrink-0 animate-spin" />
                         </>
                     ) : selectedOption ? (
                         <>
@@ -131,19 +139,19 @@ export function Combobox<T = string>({
                             ) : (
                                 <span>{selectedOption.label}</span>
                             )}
-                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            <ChevronDownIcon className="size-4 shrink-0 opacity-50" />
                         </>
                     ) : (
                         <>
                             <span className="text-muted-foreground">{placeholder}</span>
-                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            <ChevronDownIcon className="size-4 shrink-0 opacity-50" />
                         </>
                     )}
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-(--radix-popover-trigger-width) p-0" align="start">
-                <Command>
-                    <CommandInput placeholder={searchPlaceholder} disabled={isLoading} />
+            <PopoverContent className="w-(--radix-popover-trigger-width) p-0">
+                <Command shouldFilter={searchable} defaultValue={value ? String(value) : undefined}>
+                    {searchable && <CommandInput placeholder={searchPlaceholder} disabled={isLoading} />}
                     <CommandList>
                         <CommandEmpty>{isLoading ? loadingMessage : emptyMessage}</CommandEmpty>
                         {hasGroups
