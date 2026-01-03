@@ -1,8 +1,6 @@
 import { useState, useMemo, useCallback } from 'react'
 import type { ReactNode } from 'react'
-
 import { Check, ChevronDownIcon } from 'lucide-react'
-
 import {
     Button,
     Command,
@@ -13,10 +11,8 @@ import {
     CommandList,
     Popover,
     PopoverContent,
-    PopoverTrigger,
-    Spinner
+    PopoverTrigger
 } from '@/shared/components/ui'
-
 import { cn } from '@/shared/utils'
 
 export interface ComboboxOption {
@@ -34,12 +30,10 @@ export interface ComboboxProps {
     placeholder?: string
     searchPlaceholder?: string
     emptyMessage?: string
+    allowClear?: boolean
+    searchable?: boolean
     disabled?: boolean
     className?: string
-    allowClear?: boolean
-    isLoading?: boolean
-    loadingMessage?: string
-    searchable?: boolean
 }
 
 export function Combobox({
@@ -50,12 +44,10 @@ export function Combobox({
     placeholder = 'Selecione',
     searchPlaceholder = 'Buscar...',
     emptyMessage = 'Nenhum resultado encontrado.',
+    allowClear = true,
+    searchable = true,
     disabled = false,
     className,
-    allowClear = true,
-    isLoading = false,
-    loadingMessage = 'Carregando...',
-    searchable = true,
 }: ComboboxProps) {
     const [open, setOpen] = useState(false)
 
@@ -79,8 +71,6 @@ export function Combobox({
         () => options.find((opt) => opt.value === value),
         [options, value]
     )
-
-    const hasGroups = useMemo(() => options.some((opt) => opt.group), [options])
 
     const handleSelect = useCallback(
         (optionValue: string) => {
@@ -124,47 +114,29 @@ export function Combobox({
                     variant="outline"
                     role="combobox"
                     aria-expanded={open}
-                    className={cn('w-full justify-between font-normal', className)}
-                    disabled={disabled || isLoading}
-                >
-                    {isLoading ? (
-                        <>
-                            <span className="text-muted-foreground">{loadingMessage}</span>
-                            <Spinner className="size-4 shrink-0 animate-spin" />
-                        </>
-                    ) : selectedOption ? (
-                        <>
-                            {selectedOption.renderItem ? (
-                                selectedOption.renderItem()
-                            ) : (
-                                <span>{selectedOption.label}</span>
-                            )}
-                            <ChevronDownIcon className="size-4 shrink-0 opacity-50" />
-                        </>
-                    ) : (
-                        <>
-                            <span className="text-muted-foreground">{placeholder}</span>
-                            <ChevronDownIcon className="size-4 shrink-0 opacity-50" />
-                        </>
+                    className={cn(
+                        'justify-between font-normal',
+                        !selectedOption && 'text-muted-foreground',
+                        className
                     )}
+                    disabled={disabled}
+                >
+                    {selectedOption
+                        ? (selectedOption.renderItem?.() ?? selectedOption.label)
+                        : placeholder}
+                    <ChevronDownIcon className="text-muted-foreground size-4 shrink-0 opacity-50" />
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="w-(--radix-popover-trigger-width) p-0">
                 <Command shouldFilter={searchable} defaultValue={value}>
-                    {searchable && <CommandInput placeholder={searchPlaceholder} disabled={isLoading} />}
+                    {searchable && <CommandInput placeholder={searchPlaceholder} />}
                     <CommandList>
-                        <CommandEmpty>{isLoading ? loadingMessage : emptyMessage}</CommandEmpty>
-                        {hasGroups
-                            ? Object.entries(optionsByGroup).map(([group, groupOptions]) =>
-                                group === '__default__' ? (
-                                    groupOptions.map((option, index) => renderCommandItem(option, index))
-                                ) : (
-                                    <CommandGroup key={group} heading={group}>
-                                        {groupOptions.map((option, index) => renderCommandItem(option, index))}
-                                    </CommandGroup>
-                                )
-                            )
-                            : options.map((option, index) => renderCommandItem(option, index))}
+                        <CommandEmpty>{emptyMessage}</CommandEmpty>
+                        {Object.entries(optionsByGroup).map(([group, groupOptions]) => (
+                            <CommandGroup key={group} heading={group === '__default__' ? undefined : group}>
+                                {groupOptions.map((option, index) => renderCommandItem(option, index))}
+                            </CommandGroup>
+                        ))}
                     </CommandList>
                 </Command>
             </PopoverContent>

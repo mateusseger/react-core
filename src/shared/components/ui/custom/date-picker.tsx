@@ -1,7 +1,5 @@
 import { useState } from 'react'
-
 import { CalendarIcon } from 'lucide-react'
-
 import {
     Popover,
     PopoverContent,
@@ -9,7 +7,6 @@ import {
     Button,
     Calendar
 } from '@/shared/components/ui'
-
 import { cn } from '@/shared/utils'
 
 export interface DatePickerProps {
@@ -25,7 +22,7 @@ export function DatePicker({
     id,
     value,
     onValueChange,
-    placeholder = 'Selecione uma data',
+    placeholder = 'Selecione',
     disabled,
     className,
 }: DatePickerProps) {
@@ -51,13 +48,13 @@ export function DatePicker({
                     variant="outline"
                     disabled={disabled}
                     className={cn(
-                        'w-full justify-between font-normal',
+                        'justify-between font-normal',
                         !value && 'text-muted-foreground',
                         className
                     )}
                 >
                     {selectedDate ? selectedDate.toLocaleDateString('pt-BR') : placeholder}
-                    <CalendarIcon className="h-4 w-4 opacity-50" />
+                    <CalendarIcon className="h-4 w-4 opacity-50 text-muted-foreground" />
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
