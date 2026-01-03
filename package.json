@@ -1,6 +1,6 @@
 {
     "name": "@herval/react-core",
-    "version": "1.0.9",
+    "version": "1.0.10",
     "description": "Biblioteca React Core com layout, UI, autenticação, temas e erros",
     "type": "module",
     "main": "./dist/index.cjs",
@@ -23,7 +23,8 @@
     ],
     "scripts": {
         "build": "tsc -p tsconfig.app.json && vite build",
-        "dev": "cd ../react-template && pnpm run dev"
+        "dev": "vite",
+        "preview": "vite preview"
     },
     "peerDependencies": {
         "@radix-ui/react-avatar": "^1.1.11",
