@@ -122,6 +122,10 @@
     button:not(:disabled) {
         @apply cursor-pointer;
     }
+
+    [data-slot="select-trigger"]:hover:not(:disabled) {
+        @apply bg-accent text-accent-foreground;
+    }
 }
 
 html {
