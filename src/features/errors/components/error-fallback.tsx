@@ -1,4 +1,4 @@
-import { AlertTriangle, ArrowLeft, RefreshCw } from "lucide-react"
+import { AlertTriangle, Home, RefreshCw } from "lucide-react"
 import { Button } from "@/shared/components/ui/shadcn/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/shared/components/ui/shadcn/card"
 
@@ -13,7 +13,6 @@ export function ErrorFallback({ error, resetErrorBoundary, showStack = false }: 
     const stack = error?.stack
 
     const handleRetry = () => resetErrorBoundary?.() ?? window.location.reload()
-    const handleBack = () => window.history.length > 1 ? window.history.back() : (window.location.href = "/")
 
     return (
         <div className="flex min-h-svh items-center justify-center bg-background p-4">
@@ -38,9 +37,9 @@ export function ErrorFallback({ error, resetErrorBoundary, showStack = false }: 
                 )}
 
                 <CardFooter className="flex flex-col gap-2 sm:flex-row">
-                    <Button variant="outline" onClick={handleBack} className="w-full gap-2 sm:flex-1">
-                        <ArrowLeft className="h-4 w-4" />
-                        Voltar
+                    <Button variant="outline" onClick={() => window.location.replace("/")} className="w-full gap-2 sm:flex-1">
+                        <Home className="h-4 w-4" />
+                        Voltar ao Início
                     </Button>
                     <Button onClick={handleRetry} className="w-full gap-2 sm:flex-1">
                         <RefreshCw className="h-4 w-4" />

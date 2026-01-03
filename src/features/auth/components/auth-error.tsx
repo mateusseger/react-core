@@ -19,7 +19,7 @@ export function AuthError({ title, message }: AuthErrorProps) {
                     <CardDescription>{message}</CardDescription>
                 </CardHeader>
                 <CardFooter>
-                    <Button onClick={() => (window.location.href = "/")} className="w-full gap-2">
+                    <Button onClick={() => window.location.replace("/")} className="w-full gap-2">
                         <Home className="h-4 w-4" />
                         Voltar ao Início
                     </Button>

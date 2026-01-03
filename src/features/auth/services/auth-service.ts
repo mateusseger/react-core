@@ -50,7 +50,7 @@ function setupAuthEvents(): void {
 function handleCrossTabAuthSync(event: StorageEvent): void {
     if (!event.key?.startsWith("oidc.user:")) return
 
-    if (event.oldValue && !event.newValue) window.location.href = "/"
+    if (event.oldValue && !event.newValue) window.location.replace("/")
     if (!event.oldValue && event.newValue) window.location.reload()
 }
 

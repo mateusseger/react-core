@@ -10,7 +10,7 @@ export function AuthCallbackPage() {
         handleCallback()
             .then((user) => {
                 if (user) {
-                    window.location.href = "/"
+                    window.location.replace("/")
                 } else {
                     return login()
                 }
