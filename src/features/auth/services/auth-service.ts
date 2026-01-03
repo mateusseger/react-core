@@ -81,19 +81,6 @@ export async function handleCallback(): Promise<User | null> {
 
     if (callbackPromise) return callbackPromise
 
-    // Debug: verificar state no localStorage
-    console.log("[AUTH] Iniciando callback...")
-    const urlParams = new URLSearchParams(window.location.search)
-    const stateFromUrl = urlParams.get("state")
-    console.log("[AUTH] State da URL:", stateFromUrl)
-
-    // Verificar o que existe no localStorage
-    const storageKeys = Object.keys(localStorage).filter(k => k.includes("oidc"))
-    console.log("[AUTH] Keys OIDC no localStorage:", storageKeys)
-    storageKeys.forEach(key => {
-        console.log(`[AUTH] ${key}:`, localStorage.getItem(key))
-    })
-
     callbackPromise = userManager!.signinRedirectCallback().then((oidcUser) => {
         if (!oidcUser?.access_token) throw new Error("Dados de usuário inválidos")
         return toUser(oidcUser)
