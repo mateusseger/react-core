@@ -27,10 +27,5 @@ export const REGEX = {
     LICENSE_PLATE_BR: /^[A-Z]{3}-?\d[A-Z0-9]\d{2}$/,
     RG: /^\d{1,2}\.\d{3}\.\d{3}-\d{1}$/,
     PIS: /^\d{3}\.\d{5}\.\d{2}-\d{1}$/,
+    VOTER_ID: /^\d{4} \d{4} \d{4}$/,
 } as const
-
-export type RegexKey = keyof typeof REGEX
-
-export function testRegex(key: RegexKey, value: string): boolean {
-    return REGEX[key].test(value)
-}

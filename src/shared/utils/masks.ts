@@ -45,6 +45,13 @@ export function maskPIS(value: string): string {
     return `${numbers.slice(0, 3)}.${numbers.slice(3, 8)}.${numbers.slice(8, 10)}-${numbers.slice(10)}`
 }
 
+export function maskVoterID(value: string): string {
+    const numbers = value.replace(/\D/g, "").slice(0, 12)
+    if (numbers.length <= 4) return numbers
+    if (numbers.length <= 8) return `${numbers.slice(0, 4)} ${numbers.slice(4)}`
+    return `${numbers.slice(0, 4)} ${numbers.slice(4, 8)} ${numbers.slice(8)}`
+}
+
 export function maskRG(value: string): string {
     const chars = value.replace(/[^0-9Xx]/g, "").slice(0, 9)
     if (chars.length <= 2) return chars
@@ -100,26 +107,4 @@ export function unmask(value: string): string {
 
 export function unmaskAll(value: string): string {
     return value.replace(/[^a-zA-Z0-9]/g, "")
-}
-
-export const MASKS = {
-    phone: maskPhone,
-    cpf: maskCPF,
-    cnpj: maskCNPJ,
-    cep: maskCEP,
-    pis: maskPIS,
-    rg: maskRG,
-    date: maskDate,
-    time: maskTime,
-    creditCard: maskCreditCard,
-    currency: maskCurrency,
-    onlyNumbers: maskOnlyNumbers,
-    onlyLetters: maskOnlyLetters,
-    alphanumeric: maskAlphanumeric,
-} as const
-
-export type MaskKey = keyof typeof MASKS
-
-export function applyMask(key: MaskKey, value: string): string {
-    return MASKS[key](value)
 }
