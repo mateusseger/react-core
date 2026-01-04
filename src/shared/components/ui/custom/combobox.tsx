@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from 'react'
 import type { ReactNode } from 'react'
-import { Check, ChevronDownIcon } from 'lucide-react'
+import { Check, ChevronsUpDown } from 'lucide-react'
 import {
     Button,
     Command,
@@ -47,7 +47,7 @@ export function Combobox({
     allowClear = true,
     searchable = true,
     disabled = false,
-    className,
+    className
 }: ComboboxProps) {
     const [open, setOpen] = useState(false)
 
@@ -124,7 +124,7 @@ export function Combobox({
                     {selectedOption
                         ? (selectedOption.renderItem?.() ?? selectedOption.label)
                         : placeholder}
-                    <ChevronDownIcon className="text-muted-foreground size-4 shrink-0 opacity-50" />
+                    <ChevronsUpDown className="text-muted-foreground size-4 shrink-0 opacity-50" />
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="w-(--radix-popover-trigger-width) p-0">
