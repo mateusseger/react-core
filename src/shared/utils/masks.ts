@@ -53,7 +53,7 @@ export function maskVoterID(value: string): string {
 }
 
 export function maskRG(value: string): string {
-    const chars = value.replace(/[^0-9Xx]/g, "").slice(0, 9)
+    const chars = value.replace(/[^0-9Xx]/g, "").toUpperCase().slice(0, 10)
     if (chars.length <= 2) return chars
     if (chars.length <= 5) return `${chars.slice(0, 2)}.${chars.slice(2)}`
     if (chars.length <= 8) return `${chars.slice(0, 2)}.${chars.slice(2, 5)}.${chars.slice(5)}`
