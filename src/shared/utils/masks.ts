@@ -52,14 +52,6 @@ export function maskVoterID(value: string): string {
     return `${numbers.slice(0, 4)} ${numbers.slice(4, 8)} ${numbers.slice(8)}`
 }
 
-export function maskRG(value: string): string {
-    const chars = value.replace(/[^0-9Xx]/g, "").toUpperCase().slice(0, 10)
-    if (chars.length <= 2) return chars
-    if (chars.length <= 5) return `${chars.slice(0, 2)}.${chars.slice(2)}`
-    if (chars.length <= 8) return `${chars.slice(0, 2)}.${chars.slice(2, 5)}.${chars.slice(5)}`
-    return `${chars.slice(0, 2)}.${chars.slice(2, 5)}.${chars.slice(5, 8)}-${chars.slice(8)}`
-}
-
 export function maskDate(value: string): string {
     const numbers = value.replace(/\D/g, "").slice(0, 8)
     if (numbers.length <= 2) return numbers
