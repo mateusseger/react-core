@@ -25,14 +25,17 @@ export default defineConfig({
                 'react-dom',
                 'react-router-dom',
                 /^@radix-ui\/.*/,
+                'class-variance-authority',
+                'clsx',
+                'cmdk',
+                'embla-carousel-react',
+                'framer-motion',
                 'lucide-react',
                 'oidc-client-ts',
-                'framer-motion',
-                'sonner',
-                'vaul',
                 'react-day-picker',
-                'clsx',
-                'tailwind-merge'
+                'sonner',
+                'tailwind-merge',
+                'vaul'
             ]
         }
     }
