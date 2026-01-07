@@ -137,6 +137,8 @@ export const appConfig: AppConfig = {
 
 ### 2. Roteador (`app-router.tsx`)
 
+⚠️ **IMPORTANTE**: A partir da versão 2.0.0, esta biblioteca **requer** o uso de `createBrowserRouter` do React Router v6.4+. O componente `<BrowserRouter>` não é mais compatível devido ao uso de `<ScrollRestoration />` para gerenciamento automático de scroll.
+
 Configure as rotas utilizando o `AppLayout` e as rotas utilitárias da biblioteca.
 
 ```tsx
@@ -242,7 +244,17 @@ O `AppLayout` fornece uma estrutura responsiva completa "out-of-the-box":
 
 - **Sidebar**: Menu lateral colapsável, responsivo (drawer em mobile), com suporte a submenus e filtro de permissões baseado em roles.
 - **Header**: Breadcrumbs automáticos, toggle de tema (light/dark), avatar do usuário e logout.
-- **Page Transition**: Animações suaves de entrada/saída entre rotas.
+- **Page Transition**: Animações suaves de entrada/saída entre rotas com gerenciamento automático de scroll.
+
+#### Gerenciamento de Scroll (v2.0.0+)
+
+O componente `AppPageTransition` agora inclui gerenciamento automático de scroll via `<ScrollRestoration />` do React Router:
+
+- **Navegação por link**: Sempre reseta o scroll para o topo da página
+- **Navegação back/forward do navegador**: Restaura a posição anterior do scroll
+- **Requer**: `createBrowserRouter` - não funciona com `<BrowserRouter>`
+
+Este comportamento resolve problemas comuns em SPAs onde a página mantinha a posição de scroll ao navegar entre rotas.
 
 #### Controle de Visibilidade por Roles
 
