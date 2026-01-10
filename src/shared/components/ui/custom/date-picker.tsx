@@ -1,18 +1,20 @@
-import { useState } from 'react'
+import { useState, type ChangeEvent } from 'react'
 import { CalendarIcon } from 'lucide-react'
+import { parse, format, isValid } from 'date-fns'
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
-    Button,
-    Calendar
+    Input,
+    Calendar,
+    Button
 } from '@/shared/components/ui'
-import { cn } from '@/shared/utils'
+import { cn, maskDateBR } from '@/shared/utils'
 
 export interface DatePickerProps {
     id?: string
-    value?: string // formato ISO: YYYY-MM-DD
-    onValueChange?: (value: string | undefined) => void
+    value?: Date
+    onValueChange?: (value: Date | undefined) => void
     placeholder?: string
     disabled?: boolean
     className?: string
@@ -22,50 +24,82 @@ export function DatePicker({
     id,
     value,
     onValueChange,
-    placeholder = 'Selecione',
+    placeholder = 'DD/MM/AAAA',
     disabled,
     className,
 }: DatePickerProps) {
     const [open, setOpen] = useState(false)
+    const [inputValue, setInputValue] = useState('')
 
-    const selectedDate = value ? new Date(value + 'T00:00:00') : undefined
+    const displayValue = inputValue || (value && isValid(value) ? format(value, 'dd/MM/yyyy') : '')
 
-    const handleSelect = (date: Date | undefined) => {
-        if (date) {
-            const isoDate = date.toISOString().split('T')[0]
-            onValueChange?.(isoDate)
-        } else {
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const masked = maskDateBR(e.target.value)
+        setInputValue(masked)
+
+        if (masked.length === 0) {
             onValueChange?.(undefined)
+        } else if (masked.length === 10) {
+            const parsedDate = parse(masked, 'dd/MM/yyyy', new Date())
+            onValueChange?.(isValid(parsedDate) ? parsedDate : undefined)
         }
+    }
+
+    const handleInputBlur = () => {
+        setInputValue('')
+    }
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'ArrowDown') {
+            e.preventDefault()
+            setOpen(true)
+        }
+    }
+
+    const handleCalendarSelect = (date: Date | undefined) => {
+        onValueChange?.(date)
         setOpen(false)
+        setInputValue('')
     }
 
     return (
-        <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-                <Button
-                    id={id}
-                    variant="outline"
-                    disabled={disabled}
-                    className={cn(
-                        'justify-between font-normal',
-                        !value && 'text-muted-foreground',
-                        className
-                    )}
+        <div className={cn('relative', className)}>
+            <Input
+                id={id}
+                value={displayValue}
+                onChange={handleInputChange}
+                onBlur={handleInputBlur}
+                onKeyDown={handleKeyDown}
+                placeholder={placeholder}
+                disabled={disabled}
+                className="pr-10"
+            />
+
+            <Popover open={open} onOpenChange={setOpen}>
+                <PopoverTrigger asChild>
+                    <Button
+                        variant="ghost"
+                        className="absolute top-1/2 right-2 size-6 -translate-y-1/2"
+                        disabled={disabled}
+                    >
+                        <CalendarIcon className="size-4 text-muted-foreground opacity-50" />
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent
+                    className="w-auto overflow-hidden p-0"
+                    align="end"
+                    alignOffset={-8}
+                    sideOffset={10}
                 >
-                    {selectedDate ? selectedDate.toLocaleDateString('pt-BR') : placeholder}
-                    <CalendarIcon className="h-4 w-4 opacity-50 text-muted-foreground" />
-                </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                    mode="single"
-                    selected={selectedDate}
-                    onSelect={handleSelect}
-                    captionLayout="dropdown"
-                    defaultMonth={selectedDate}
-                />
-            </PopoverContent>
-        </Popover>
+                    <Calendar
+                        mode="single"
+                        selected={value}
+                        onSelect={handleCalendarSelect}
+                        captionLayout="dropdown"
+                        defaultMonth={value}
+                    />
+                </PopoverContent>
+            </Popover>
+        </div>
     )
 }
