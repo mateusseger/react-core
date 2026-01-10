@@ -25,8 +25,8 @@ export interface ComboboxOption {
 export interface ComboboxProps {
     id?: string
     value?: string
-    onValueChange: (value: string | undefined) => void
-    options: ComboboxOption[]
+    onValueChange?: (value: string | undefined) => void
+    options?: ComboboxOption[]
     placeholder?: string
     searchPlaceholder?: string
     emptyMessage?: string
@@ -40,7 +40,7 @@ export function Combobox({
     id,
     value,
     onValueChange,
-    options,
+    options = [],
     placeholder = 'Selecione',
     searchPlaceholder = 'Buscar...',
     emptyMessage = 'Nenhum resultado encontrado.',
@@ -75,7 +75,7 @@ export function Combobox({
     const handleSelect = useCallback(
         (optionValue: string) => {
             const newValue = allowClear && optionValue === value ? undefined : optionValue
-            onValueChange(newValue)
+            onValueChange?.(newValue)
             setOpen(false)
         },
         [allowClear, value, onValueChange]
@@ -127,7 +127,7 @@ export function Combobox({
                     <ChevronsUpDown className="text-muted-foreground size-4 shrink-0 opacity-50" />
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-(--radix-popover-trigger-width) p-0">
+            <PopoverContent className="w-(--radix-popover-trigger-width) overflow-hidden p-0">
                 <Command shouldFilter={searchable} defaultValue={value}>
                     {searchable && <CommandInput placeholder={searchPlaceholder} />}
                     <CommandList>
