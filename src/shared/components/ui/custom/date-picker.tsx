@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent } from 'react'
+import { useState, type ChangeEvent, type KeyboardEvent } from 'react'
 import { CalendarIcon } from 'lucide-react'
 import { parse, format, isValid } from 'date-fns'
 import {
@@ -49,7 +49,7 @@ export function DatePicker({
         setInputValue('')
     }
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'ArrowDown') {
             e.preventDefault()
             setOpen(true)
