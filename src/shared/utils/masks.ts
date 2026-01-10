@@ -83,7 +83,3 @@ export function maskOnlyLetters(value: string): string {
 export function maskOnlyNumbers(value: string): string {
     return value.replace(/[^0-9]/g, "")
 }
-
-export function maskAlphanumeric(value: string): string {
-    return value.replace(/[^a-zA-ZÀ-ÿ0-9]/g, "")
-}

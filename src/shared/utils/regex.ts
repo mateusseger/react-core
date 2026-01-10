@@ -14,5 +14,4 @@ export const REGEX = {
     USERNAME: /^[a-zA-Z0-9_]{3,20}$/,
     ONLY_LETTERS: /^[a-zA-ZÀ-ÿ]+$/,
     ONLY_NUMBERS: /^[0-9]+$/,
-    ALPHANUMERIC: /^[a-zA-ZÀ-ÿ0-9]+$/,
 } as const
