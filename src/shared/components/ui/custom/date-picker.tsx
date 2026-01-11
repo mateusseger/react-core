@@ -12,6 +12,8 @@ import {
 } from '@/shared/components/ui'
 import { cn, maskDateBR } from '@/shared/utils'
 
+const FROM_YEAR = 1915
+
 export interface DatePickerProps {
     id?: string
     value?: Date
@@ -42,7 +44,11 @@ export function DatePicker({
             onValueChange?.(undefined)
         } else if (masked.length === 10) {
             const parsedDate = parse(masked, 'dd/MM/yyyy', new Date())
-            onValueChange?.(isValid(parsedDate) ? parsedDate : undefined)
+            if (isValid(parsedDate) && parsedDate.getFullYear() >= FROM_YEAR) {
+                onValueChange?.(parsedDate)
+            } else {
+                onValueChange?.(undefined)
+            }
         }
     }
 
@@ -99,6 +105,7 @@ export function DatePicker({
                         captionLayout="dropdown"
                         defaultMonth={value}
                         locale={ptBR}
+                        startMonth={new Date(FROM_YEAR, 0)}
                     />
                 </PopoverContent>
             </Popover>
