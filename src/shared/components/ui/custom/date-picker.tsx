@@ -92,7 +92,7 @@ export function DatePicker({
     }
 
     return (
-        <div>
+        <div className="flex flex-col gap-3">
             <div className={cn('relative', className)}>
                 <Input
                     id={id}
