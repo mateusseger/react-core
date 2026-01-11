@@ -60,9 +60,11 @@ export function DatePicker({
                     onValueChange?.(parsedDate)
                 } else {
                     onValueChange?.(undefined)
+                    setInputValue('')
                 }
             } else {
                 onValueChange?.(undefined)
+                setInputValue('')
             }
         }
     }
