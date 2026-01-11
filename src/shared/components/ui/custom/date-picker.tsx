@@ -54,9 +54,9 @@ export function DatePicker({
 
             if (isValid(parsedDate)) {
                 const isWithinYearRange = parsedDate.getFullYear() >= fromYear && parsedDate.getFullYear() <= toYear
-                const isBeforeMaxDate = !maxDate || parsedDate <= maxDate
+                const isNotAfterMaxDate = !maxDate || parsedDate <= maxDate
 
-                if (isWithinYearRange && isBeforeMaxDate) {
+                if (isWithinYearRange && isNotAfterMaxDate) {
                     onValueChange?.(parsedDate)
                 } else {
                     onValueChange?.(undefined)
