@@ -50,8 +50,8 @@ export function DatePicker({
         setInputValue(masked)
 
         if (masked.length === 0) {
-            onValueChange?.(undefined)
             onError?.(undefined)
+            onValueChange?.(undefined)
         } else if (masked.length === 10) {
             const parsedDate = parse(masked, 'dd/MM/yyyy', new Date())
 
@@ -60,19 +60,19 @@ export function DatePicker({
                 const isNotAfterMaxDate = !maxDate || parsedDate <= maxDate
 
                 if (isWithinYearRange && isNotAfterMaxDate) {
-                    onValueChange?.(parsedDate)
                     onError?.(undefined)
+                    onValueChange?.(parsedDate)
                 } else {
-                    onValueChange?.(undefined)
                     if (!isWithinYearRange) {
                         onError?.(`Data deve estar entre ${fromYear} e ${toYear}`)
                     } else {
                         onError?.(`Data não pode ser posterior a ${format(maxDate!, 'dd/MM/yyyy')}`)
                     }
+                    onValueChange?.(undefined)
                 }
             } else {
-                onValueChange?.(undefined)
                 onError?.('Data inválida')
+                onValueChange?.(undefined)
             }
         } else {
             onError?.(undefined)
@@ -87,8 +87,8 @@ export function DatePicker({
     }
 
     const handleCalendarSelect = (date: Date | undefined) => {
-        onValueChange?.(date)
         onError?.(undefined)
+        onValueChange?.(date)
         setOpen(false)
         setInputValue('')
     }
