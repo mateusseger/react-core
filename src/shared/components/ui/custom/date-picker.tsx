@@ -19,6 +19,7 @@ export interface DatePickerProps {
     id?: string
     value?: Date
     onValueChange?: (value: Date | undefined) => void
+    onError?: (error: string | undefined) => void
     placeholder?: string
     disabled?: boolean
     className?: string
@@ -31,6 +32,7 @@ export function DatePicker({
     id,
     value,
     onValueChange,
+    onError,
     placeholder = 'DD/MM/AAAA',
     disabled,
     className,
@@ -49,6 +51,7 @@ export function DatePicker({
 
         if (masked.length === 0) {
             onValueChange?.(undefined)
+            onError?.(undefined)
         } else if (masked.length === 10) {
             const parsedDate = parse(masked, 'dd/MM/yyyy', new Date())
 
@@ -58,19 +61,22 @@ export function DatePicker({
 
                 if (isWithinYearRange && isNotAfterMaxDate) {
                     onValueChange?.(parsedDate)
+                    onError?.(undefined)
                 } else {
                     onValueChange?.(undefined)
-                    setInputValue('')
+                    if (!isWithinYearRange) {
+                        onError?.(`Data deve estar entre ${fromYear} e ${toYear}`)
+                    } else {
+                        onError?.(`Data não pode ser posterior a ${format(maxDate!, 'dd/MM/yyyy')}`)
+                    }
                 }
             } else {
                 onValueChange?.(undefined)
-                setInputValue('')
+                onError?.('Data inválida')
             }
+        } else {
+            onError?.(undefined)
         }
-    }
-
-    const handleInputBlur = () => {
-        setInputValue('')
     }
 
     const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -82,6 +88,7 @@ export function DatePicker({
 
     const handleCalendarSelect = (date: Date | undefined) => {
         onValueChange?.(date)
+        onError?.(undefined)
         setOpen(false)
         setInputValue('')
     }
@@ -92,7 +99,6 @@ export function DatePicker({
                 id={id}
                 value={displayValue}
                 onChange={handleInputChange}
-                onBlur={handleInputBlur}
                 onKeyDown={handleKeyDown}
                 placeholder={placeholder}
                 disabled={disabled}
