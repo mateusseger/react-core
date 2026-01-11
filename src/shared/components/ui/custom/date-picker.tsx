@@ -24,6 +24,7 @@ export interface DatePickerProps {
     className?: string
     fromYear?: number
     toYear?: number
+    maxDate?: Date
 }
 
 export function DatePicker({
@@ -35,6 +36,7 @@ export function DatePicker({
     className,
     fromYear = DEFAULT_FROM_YEAR,
     toYear = DEFAULT_TO_YEAR,
+    maxDate,
 }: DatePickerProps) {
     const [open, setOpen] = useState(false)
     const [inputValue, setInputValue] = useState('')
@@ -49,8 +51,16 @@ export function DatePicker({
             onValueChange?.(undefined)
         } else if (masked.length === 10) {
             const parsedDate = parse(masked, 'dd/MM/yyyy', new Date())
-            if (isValid(parsedDate) && parsedDate.getFullYear() >= fromYear && parsedDate.getFullYear() <= toYear) {
-                onValueChange?.(parsedDate)
+
+            if (isValid(parsedDate)) {
+                const isWithinYearRange = parsedDate.getFullYear() >= fromYear && parsedDate.getFullYear() <= toYear
+                const isBeforeMaxDate = !maxDate || parsedDate <= maxDate
+
+                if (isWithinYearRange && isBeforeMaxDate) {
+                    onValueChange?.(parsedDate)
+                } else {
+                    onValueChange?.(undefined)
+                }
             } else {
                 onValueChange?.(undefined)
             }
@@ -112,6 +122,7 @@ export function DatePicker({
                         locale={ptBR}
                         startMonth={new Date(fromYear, 0)}
                         endMonth={new Date(toYear, 11)}
+                        disabled={maxDate ? { after: maxDate } : undefined}
                     />
                 </PopoverContent>
             </Popover>
