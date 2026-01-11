@@ -8,7 +8,8 @@ import {
     PopoverTrigger,
     Input,
     Calendar,
-    Button
+    Button,
+    FieldError
 } from '@/shared/components/ui'
 import { cn, maskDateBR } from '@/shared/utils'
 
@@ -19,7 +20,6 @@ export interface DatePickerProps {
     id?: string
     value?: Date
     onValueChange?: (value: Date | undefined) => void
-    onError?: (error: string | undefined) => void
     placeholder?: string
     disabled?: boolean
     className?: string
@@ -32,7 +32,6 @@ export function DatePicker({
     id,
     value,
     onValueChange,
-    onError,
     placeholder = 'DD/MM/AAAA',
     disabled,
     className,
@@ -41,6 +40,7 @@ export function DatePicker({
     maxDate,
 }: DatePickerProps) {
     const [open, setOpen] = useState(false)
+    const [error, setError] = useState<string | undefined>()
     const [inputValue, setInputValue] = useState('')
 
     const displayValue = inputValue || (value && isValid(value) ? format(value, 'dd/MM/yyyy') : '')
@@ -50,7 +50,7 @@ export function DatePicker({
         setInputValue(masked)
 
         if (masked.length === 0) {
-            onError?.(undefined)
+            setError(undefined)
             onValueChange?.(undefined)
         } else if (masked.length === 10) {
             const parsedDate = parse(masked, 'dd/MM/yyyy', new Date())
@@ -60,22 +60,20 @@ export function DatePicker({
                 const isNotAfterMaxDate = !maxDate || parsedDate <= maxDate
 
                 if (isWithinYearRange && isNotAfterMaxDate) {
-                    onError?.(undefined)
+                    setError(undefined)
                     onValueChange?.(parsedDate)
                 } else {
                     if (!isWithinYearRange) {
-                        onError?.(`Data deve estar entre ${fromYear} e ${toYear}`)
+                        setError(`Data deve estar entre ${fromYear} e ${toYear}`)
                     } else {
-                        onError?.(`Data não pode ser posterior a ${format(maxDate!, 'dd/MM/yyyy')}`)
+                        setError(`Data não pode ser posterior a ${format(maxDate!, 'dd/MM/yyyy')}`)
                     }
-                    onValueChange?.(undefined)
                 }
             } else {
-                onError?.('Data inválida')
-                onValueChange?.(undefined)
+                setError('Data inválida')
             }
         } else {
-            onError?.(undefined)
+            setError(undefined)
         }
     }
 
@@ -87,53 +85,57 @@ export function DatePicker({
     }
 
     const handleCalendarSelect = (date: Date | undefined) => {
-        onError?.(undefined)
+        setError(undefined)
         onValueChange?.(date)
         setOpen(false)
         setInputValue('')
     }
 
     return (
-        <div className={cn('relative', className)}>
-            <Input
-                id={id}
-                value={displayValue}
-                onChange={handleInputChange}
-                onKeyDown={handleKeyDown}
-                placeholder={placeholder}
-                disabled={disabled}
-                className="pr-10"
-            />
+        <div>
+            <div className={cn('relative', className)}>
+                <Input
+                    id={id}
+                    value={displayValue}
+                    onChange={handleInputChange}
+                    onKeyDown={handleKeyDown}
+                    placeholder={placeholder}
+                    disabled={disabled}
+                    className="pr-10"
+                />
 
-            <Popover open={open} onOpenChange={setOpen}>
-                <PopoverTrigger asChild>
-                    <Button
-                        variant="ghost"
-                        className="absolute top-1/2 right-2 size-6 -translate-y-1/2"
-                        disabled={disabled}
+                <Popover open={open} onOpenChange={setOpen}>
+                    <PopoverTrigger asChild>
+                        <Button
+                            variant="ghost"
+                            className="absolute top-1/2 right-2 size-6 -translate-y-1/2"
+                            disabled={disabled}
+                        >
+                            <CalendarIcon className="size-4 text-muted-foreground opacity-50" />
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                        className="w-auto overflow-hidden p-0"
+                        align="end"
+                        alignOffset={-8}
+                        sideOffset={10}
                     >
-                        <CalendarIcon className="size-4 text-muted-foreground opacity-50" />
-                    </Button>
-                </PopoverTrigger>
-                <PopoverContent
-                    className="w-auto overflow-hidden p-0"
-                    align="end"
-                    alignOffset={-8}
-                    sideOffset={10}
-                >
-                    <Calendar
-                        mode="single"
-                        selected={value}
-                        onSelect={handleCalendarSelect}
-                        captionLayout="dropdown"
-                        defaultMonth={value}
-                        locale={ptBR}
-                        startMonth={new Date(fromYear, 0)}
-                        endMonth={new Date(toYear, 11)}
-                        disabled={maxDate ? { after: maxDate } : undefined}
-                    />
-                </PopoverContent>
-            </Popover>
+                        <Calendar
+                            mode="single"
+                            selected={value}
+                            onSelect={handleCalendarSelect}
+                            captionLayout="dropdown"
+                            defaultMonth={value}
+                            locale={ptBR}
+                            startMonth={new Date(fromYear, 0)}
+                            endMonth={new Date(toYear, 11)}
+                            disabled={maxDate ? { after: maxDate } : undefined}
+                        />
+                    </PopoverContent>
+                </Popover>
+            </div>
+
+            {error && <FieldError>{error}</FieldError>}
         </div>
     )
 }
