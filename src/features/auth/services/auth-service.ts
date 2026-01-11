@@ -4,7 +4,7 @@ import type { User, UserProfile, AuthConfig } from "../types/auth-types"
 let userManager: UserManager | null = null
 let clientId = ""
 let devMode = false
-let mockRoles: string[] = ["user"]
+let mockRoles: string[] = []
 let publicRoutes: string[] = []
 let callbackPromise: Promise<User | null> | null = null
 let isRedirecting = false
@@ -18,7 +18,7 @@ export function initAuth(config: AuthConfig, isDevMode = false): void {
 
     devMode = isDevMode
     clientId = config.clientId
-    mockRoles = config.devMockRoles ?? ["user"]
+    mockRoles = config.devMockRoles ?? []
     publicRoutes = [...DEFAULT_PUBLIC_ROUTES, ...(config.publicRoutes ?? [])]
 
     if (devMode) return

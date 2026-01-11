@@ -42,11 +42,11 @@ export function AppLogo({
         >
             <img
                 src={currentLogo}
-                alt={projectConfig.logoAlt ?? "Logo"}
+                alt="Logo"
                 className="h-5 sm:h-6"
             />
 
-            <h1 className="text-xs sm:text-sm font-bold">{projectConfig.name}</h1>
+            <h1 className="text-xs sm:text-sm font-bold">{projectConfig.title}</h1>
         </Link>
     )
 }

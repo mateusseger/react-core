@@ -2,10 +2,8 @@ import type { LucideIcon } from "lucide-react"
 import type { AuthConfig } from "@/features/auth"
 
 export interface ProjectConfig {
-    name: string
-    version: string
+    title: string
     logo?: string
-    logoAlt?: string
 }
 
 export interface MenuSubItem {
