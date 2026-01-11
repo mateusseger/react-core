@@ -1,6 +1,7 @@
 import { useState, type ChangeEvent, type KeyboardEvent } from 'react'
 import { CalendarIcon } from 'lucide-react'
 import { parse, format, isValid } from 'date-fns'
+import { ptBR } from "react-day-picker/locale";
 import {
     Popover,
     PopoverContent,
@@ -97,6 +98,7 @@ export function DatePicker({
                         onSelect={handleCalendarSelect}
                         captionLayout="dropdown"
                         defaultMonth={value}
+                        locale={ptBR}
                     />
                 </PopoverContent>
             </Popover>
