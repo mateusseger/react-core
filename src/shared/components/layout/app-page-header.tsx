@@ -2,18 +2,18 @@ import { ArrowLeft, type LucideIcon } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '../ui'
 
-interface PageHeaderProps {
+interface AppPageHeaderProps {
     backButton?: boolean
     icon?: LucideIcon
     title: string
     description: string
 }
 
-export function PageHeader({ backButton, icon: Icon, title, description }: PageHeaderProps) {
+export function AppPageHeader({ backButton, icon: Icon, title, description }: AppPageHeaderProps) {
     const navigate = useNavigate()
 
     return (
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 mb-4">
             {backButton && (
                 <div className='flex items-center justify-center'>
                     <Button variant="ghost" onClick={() => navigate(-1)}>
