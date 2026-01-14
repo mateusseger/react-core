@@ -2,12 +2,14 @@ import { Link } from "react-router-dom"
 import { useTheme } from "@/features/themes"
 import { cn } from "@/shared/utils/cn"
 import type { ProjectConfig } from "@/shared/types/config"
-import logoHervalLight from "@/shared/assets/logos/herval-light.png"
-import logoHervalDark from "@/shared/assets/logos/herval-dark.png"
-import logoTaqiLight from "@/shared/assets/logos/taqi-light.svg"
-import logoTaqiDark from "@/shared/assets/logos/taqi-dark.svg"
-import logoIplaceLight from "@/shared/assets/logos/iplace-light.svg"
-import logoIplaceDark from "@/shared/assets/logos/iplace-dark.svg"
+import {
+    logoHervalLight,
+    logoHervalDark,
+    logoTaqiLight,
+    logoTaqiDark,
+    logoIplaceLight,
+    logoIplaceDark
+} from "@/shared/assets/logos"
 
 const logos = {
     herval: { light: logoHervalLight, dark: logoHervalDark },
