@@ -45,7 +45,7 @@ export function AppLogo({
             <img
                 src={currentLogo}
                 alt="Logo"
-                className="h-5 sm:h-6"
+                className="h-7"
             />
 
             <h1 className="text-xs sm:text-sm font-bold">{projectConfig.title}</h1>
