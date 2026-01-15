@@ -109,9 +109,11 @@ export function AppHeader({ showSidebarTrigger = true, projectConfig }: AppHeade
                                         <p className="text-sm font-medium leading-none">
                                             {userDisplayName}
                                         </p>
-                                        <p className="text-xs text-muted-foreground leading-none">
-                                            {user.profile.email}
-                                        </p>
+                                        {user.profile.email && (
+                                            <p className="text-xs text-muted-foreground leading-none">
+                                                {user.profile.email}
+                                            </p>
+                                        )}
                                     </div>
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator />

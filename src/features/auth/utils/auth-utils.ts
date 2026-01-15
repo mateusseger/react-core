@@ -21,7 +21,7 @@ export function hasAllRoles(user: User | null, roles: string[]): boolean {
 }
 
 export function getUserDisplayName(user: User | null): string {
-    return user?.profile.name ?? user?.profile.email ?? user?.profile.preferred_username ?? "User"
+    return user?.profile.name ?? user?.profile.preferred_username ?? "User"
 }
 
 export function getUserInitials(user: User | null): string {
