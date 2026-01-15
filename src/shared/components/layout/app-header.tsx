@@ -121,7 +121,7 @@ export function AppHeader({ showSidebarTrigger = true, projectConfig }: AppHeade
                                     onClick={handleLogout}
                                     className="cursor-pointer"
                                 >
-                                    <LogOut className="mr-2 h-4 w-4" />
+                                    <LogOut className="h-4 w-4" />
                                     <span>Logout</span>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
