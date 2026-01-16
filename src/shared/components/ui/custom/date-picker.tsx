@@ -20,24 +20,22 @@ export interface DatePickerProps {
     id?: string
     value?: Date
     onValueChange?: (value: Date | undefined) => void
+    minDate?: Date
+    maxDate?: Date
     placeholder?: string
     disabled?: boolean
     className?: string
-    fromYear?: number
-    toYear?: number
-    maxDate?: Date
 }
 
 export function DatePicker({
     id,
     value,
     onValueChange,
+    minDate = new Date(DEFAULT_FROM_YEAR, 0, 1),
+    maxDate = new Date(DEFAULT_TO_YEAR, 11, 31),
     placeholder = 'DD/MM/AAAA',
     disabled,
-    className,
-    fromYear = DEFAULT_FROM_YEAR,
-    toYear = DEFAULT_TO_YEAR,
-    maxDate,
+    className
 }: DatePickerProps) {
     const [open, setOpen] = useState(false)
     const [error, setError] = useState<string | undefined>()
@@ -56,17 +54,17 @@ export function DatePicker({
             const parsedDate = parse(masked, 'dd/MM/yyyy', new Date())
 
             if (isValid(parsedDate)) {
-                const isWithinYearRange = parsedDate.getFullYear() >= fromYear && parsedDate.getFullYear() <= toYear
-                const isNotAfterMaxDate = !maxDate || parsedDate <= maxDate
+                const isNotBeforeMinDate = parsedDate >= minDate
+                const isNotAfterMaxDate = parsedDate <= maxDate
 
-                if (isWithinYearRange && isNotAfterMaxDate) {
+                if (isNotBeforeMinDate && isNotAfterMaxDate) {
                     setError(undefined)
                     onValueChange?.(parsedDate)
                 } else {
-                    if (!isWithinYearRange) {
-                        setError(`Data deve estar entre ${fromYear} e ${toYear}`)
+                    if (!isNotBeforeMinDate) {
+                        setError(`Data não pode ser anterior a ${format(minDate, 'dd/MM/yyyy')}`)
                     } else {
-                        setError(`Data não pode ser posterior a ${format(maxDate!, 'dd/MM/yyyy')}`)
+                        setError(`Data não pode ser posterior a ${format(maxDate, 'dd/MM/yyyy')}`)
                     }
                 }
             } else {
@@ -127,9 +125,9 @@ export function DatePicker({
                             captionLayout="dropdown"
                             defaultMonth={value}
                             locale={ptBR}
-                            startMonth={new Date(fromYear, 0)}
-                            endMonth={new Date(toYear, 11)}
-                            disabled={maxDate ? { after: maxDate } : undefined}
+                            startMonth={minDate}
+                            endMonth={maxDate}
+                            disabled={{ before: minDate, after: maxDate }}
                         />
                     </PopoverContent>
                 </Popover>
