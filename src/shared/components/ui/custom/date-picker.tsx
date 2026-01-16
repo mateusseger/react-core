@@ -1,6 +1,6 @@
 import { useState, type ChangeEvent, type KeyboardEvent } from 'react'
 import { CalendarIcon } from 'lucide-react'
-import { parse, format, isValid } from 'date-fns'
+import { parse, format, isValid, startOfDay } from 'date-fns'
 import { ptBR } from "react-day-picker/locale";
 import {
     Popover,
@@ -13,8 +13,11 @@ import {
 } from '@/shared/components/ui'
 import { cn, maskDateBR } from '@/shared/utils'
 
-const DEFAULT_FROM_YEAR = 1915
-const DEFAULT_TO_YEAR = new Date().getFullYear() + 100
+const DEFAULT_MIN_YEAR = 1915
+const DEFAULT_MAX_YEAR = new Date().getFullYear() + 100
+
+const DEFAULT_MIN_DATE = new Date(DEFAULT_MIN_YEAR, 0, 1)
+const DEFAULT_MAX_DATE = new Date(DEFAULT_MAX_YEAR, 11, 31)
 
 export interface DatePickerProps {
     id?: string
@@ -31,8 +34,8 @@ export function DatePicker({
     id,
     value,
     onValueChange,
-    minDate = new Date(DEFAULT_FROM_YEAR, 0, 1),
-    maxDate = new Date(DEFAULT_TO_YEAR, 11, 31),
+    minDate = DEFAULT_MIN_DATE,
+    maxDate = DEFAULT_MAX_DATE,
     placeholder = 'DD/MM/AAAA',
     disabled,
     className
@@ -40,6 +43,9 @@ export function DatePicker({
     const [open, setOpen] = useState(false)
     const [error, setError] = useState<string | undefined>()
     const [inputValue, setInputValue] = useState('')
+
+    const normalizedMinDate = startOfDay(minDate)
+    const normalizedMaxDate = startOfDay(maxDate)
 
     const displayValue = inputValue || (value && isValid(value) ? format(value, 'dd/MM/yyyy') : '')
 
@@ -51,20 +57,20 @@ export function DatePicker({
             setError(undefined)
             onValueChange?.(undefined)
         } else if (masked.length === 10) {
-            const parsedDate = parse(masked, 'dd/MM/yyyy', new Date())
+            const parsedDate = startOfDay(parse(masked, 'dd/MM/yyyy', new Date()))
 
             if (isValid(parsedDate)) {
-                const isNotBeforeMinDate = parsedDate >= minDate
-                const isNotAfterMaxDate = parsedDate <= maxDate
+                const isNotBeforeMinDate = parsedDate >= normalizedMinDate
+                const isNotAfterMaxDate = parsedDate <= normalizedMaxDate
 
                 if (isNotBeforeMinDate && isNotAfterMaxDate) {
                     setError(undefined)
                     onValueChange?.(parsedDate)
                 } else {
                     if (!isNotBeforeMinDate) {
-                        setError(`Data não pode ser anterior a ${format(minDate, 'dd/MM/yyyy')}`)
+                        setError(`Data não pode ser anterior a ${format(normalizedMinDate, 'dd/MM/yyyy')}`)
                     } else {
-                        setError(`Data não pode ser posterior a ${format(maxDate, 'dd/MM/yyyy')}`)
+                        setError(`Data não pode ser posterior a ${format(normalizedMaxDate, 'dd/MM/yyyy')}`)
                     }
                 }
             } else {
@@ -84,7 +90,7 @@ export function DatePicker({
 
     const handleCalendarSelect = (date: Date | undefined) => {
         setError(undefined)
-        onValueChange?.(date)
+        onValueChange?.(date ? startOfDay(date) : undefined)
         setOpen(false)
         setInputValue('')
     }
@@ -125,9 +131,9 @@ export function DatePicker({
                             captionLayout="dropdown"
                             defaultMonth={value}
                             locale={ptBR}
-                            startMonth={minDate}
-                            endMonth={maxDate}
-                            disabled={{ before: minDate, after: maxDate }}
+                            startMonth={normalizedMinDate}
+                            endMonth={normalizedMaxDate}
+                            disabled={{ before: normalizedMinDate, after: normalizedMaxDate }}
                         />
                     </PopoverContent>
                 </Popover>
