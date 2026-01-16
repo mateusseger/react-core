@@ -1,6 +1,6 @@
 import { useState, type ChangeEvent, type KeyboardEvent } from 'react'
 import { CalendarIcon } from 'lucide-react'
-import { parse, format, isValid, startOfDay } from 'date-fns'
+import { parse, format, isValid, startOfDay, addYears } from 'date-fns'
 import { ptBR } from "react-day-picker/locale";
 import {
     Popover,
@@ -13,11 +13,8 @@ import {
 } from '@/shared/components/ui'
 import { cn, maskDateBR } from '@/shared/utils'
 
-const DEFAULT_MIN_YEAR = 1915
-const DEFAULT_MAX_YEAR = new Date().getFullYear() + 100
-
-const DEFAULT_MIN_DATE = new Date(DEFAULT_MIN_YEAR, 0, 1)
-const DEFAULT_MAX_DATE = new Date(DEFAULT_MAX_YEAR, 11, 31)
+const DEFAULT_MIN_DATE = new Date(1915, 0, 1)
+const DEFAULT_MAX_DATE = addYears(new Date(), 100)
 
 export interface DatePickerProps {
     id?: string
@@ -68,9 +65,9 @@ export function DatePicker({
                     onValueChange?.(parsedDate)
                 } else {
                     if (!isNotBeforeMinDate) {
-                        setError(`Data não pode ser anterior a ${format(normalizedMinDate, 'dd/MM/yyyy')}`)
+                        setError(`Data não pode ser anterior à ${format(normalizedMinDate, 'dd/MM/yyyy')}`)
                     } else {
-                        setError(`Data não pode ser posterior a ${format(normalizedMaxDate, 'dd/MM/yyyy')}`)
+                        setError(`Data não pode ser posterior à ${format(normalizedMaxDate, 'dd/MM/yyyy')}`)
                     }
                 }
             } else {
