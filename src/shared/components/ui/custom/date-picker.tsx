@@ -71,9 +71,9 @@ export function DatePicker({
     // Sync: detecta mudanças externas no value
     const currentTimestamp = value?.getTime()
     if (currentTimestamp !== lastValueTimestamp.current) {
+        updateError(undefined)
         lastValueTimestamp.current = currentTimestamp
         setInputValue(formatDate(value))
-        updateError(undefined)
     }
 
     const normalizedMinDate = startOfDay(minDate)
@@ -113,9 +113,9 @@ export function DatePicker({
         if (disabled) return
 
         const normalized = date ? startOfDay(date) : undefined
-        setInputValue(formatDate(normalized))
         updateError(undefined)
         lastValueTimestamp.current = normalized?.getTime()
+        setInputValue(formatDate(normalized))
         onValueChange(normalized)
         setOpen(false)
     }

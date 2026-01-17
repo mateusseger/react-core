@@ -1,6 +1,6 @@
 {
     "name": "@herval/react-core",
-    "version": "4.1.0",
+    "version": "4.1.1",
     "description": "Biblioteca React Core com layout, UI, autenticação, temas e erros",
     "type": "module",
     "main": "./dist/index.cjs",
