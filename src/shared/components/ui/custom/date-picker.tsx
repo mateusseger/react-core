@@ -1,7 +1,7 @@
-import { useState, type ChangeEvent, type KeyboardEvent } from 'react'
+import { useState, useRef, type ChangeEvent, type KeyboardEvent } from 'react'
 import { CalendarIcon } from 'lucide-react'
 import { parse, format, isValid, startOfDay, addYears } from 'date-fns'
-import { ptBR } from "react-day-picker/locale";
+import { ptBR } from "react-day-picker/locale"
 import {
     Popover,
     PopoverContent,
@@ -13,13 +13,15 @@ import {
 } from '@/shared/components/ui'
 import { cn, maskDateBR } from '@/shared/utils'
 
+const DATE_FORMAT = 'dd/MM/yyyy'
 const DEFAULT_MIN_DATE = new Date(1915, 0, 1)
 const DEFAULT_MAX_DATE = addYears(new Date(), 100)
 
 export interface DatePickerProps {
     id?: string
     value?: Date
-    onValueChange?: (value: Date | undefined) => void
+    onValueChange: (value: Date | undefined) => void
+    onError?: (error: string | undefined) => void
     minDate?: Date
     maxDate?: Date
     placeholder?: string
@@ -27,55 +29,95 @@ export interface DatePickerProps {
     className?: string
 }
 
+function formatDate(date: Date | undefined): string {
+    return date && isValid(date) ? format(date, DATE_FORMAT) : ''
+}
+
+function parseDate(value: string): Date | undefined {
+    if (value.length !== 10) return undefined
+    const parsed = startOfDay(parse(value, DATE_FORMAT, new Date()))
+    return isValid(parsed) ? parsed : undefined
+}
+
+function validateDate(date: Date | undefined, minDate: Date, maxDate: Date): string | undefined {
+    if (!date) return 'Data inválida'
+    if (date < minDate) return `Data não pode ser anterior à ${format(minDate, DATE_FORMAT)}`
+    if (date > maxDate) return `Data não pode ser posterior à ${format(maxDate, DATE_FORMAT)}`
+    return undefined
+}
+
 export function DatePicker({
     id,
     value,
     onValueChange,
+    onError,
     minDate = DEFAULT_MIN_DATE,
     maxDate = DEFAULT_MAX_DATE,
     placeholder = 'DD/MM/AAAA',
     disabled,
     className
 }: DatePickerProps) {
+    const [inputValue, setInputValue] = useState(() => formatDate(value))
     const [open, setOpen] = useState(false)
-    const [error, setError] = useState<string | undefined>()
-    const [inputValue, setInputValue] = useState('')
+    const [error, setError] = useState<string>()
+
+    const updateError = (newError: string | undefined) => {
+        setError(newError)
+        onError?.(newError)
+    }
+
+    const lastValueTimestamp = useRef(value?.getTime())
+
+    // Sync: detecta mudanças externas no value
+    const currentTimestamp = value?.getTime()
+    if (currentTimestamp !== lastValueTimestamp.current) {
+        lastValueTimestamp.current = currentTimestamp
+        setInputValue(formatDate(value))
+        updateError(undefined)
+    }
 
     const normalizedMinDate = startOfDay(minDate)
     const normalizedMaxDate = startOfDay(maxDate)
 
-    const displayValue = inputValue || (value && isValid(value) ? format(value, 'dd/MM/yyyy') : '')
-
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+        if (disabled) return
+
         const masked = maskDateBR(e.target.value)
         setInputValue(masked)
 
-        if (masked.length === 0) {
-            setError(undefined)
-            onValueChange?.(undefined)
-        } else if (masked.length === 10) {
-            const parsedDate = startOfDay(parse(masked, 'dd/MM/yyyy', new Date()))
-
-            if (isValid(parsedDate)) {
-                const isNotBeforeMinDate = parsedDate >= normalizedMinDate
-                const isNotAfterMaxDate = parsedDate <= normalizedMaxDate
-
-                if (isNotBeforeMinDate && isNotAfterMaxDate) {
-                    setError(undefined)
-                    onValueChange?.(parsedDate)
-                } else {
-                    if (!isNotBeforeMinDate) {
-                        setError(`Data não pode ser anterior à ${format(normalizedMinDate, 'dd/MM/yyyy')}`)
-                    } else {
-                        setError(`Data não pode ser posterior à ${format(normalizedMaxDate, 'dd/MM/yyyy')}`)
-                    }
-                }
-            } else {
-                setError('Data inválida')
-            }
-        } else {
-            setError(undefined)
+        if (masked === '') {
+            updateError(undefined)
+            lastValueTimestamp.current = undefined
+            onValueChange(undefined)
+            return
         }
+
+        if (masked.length < 10) {
+            updateError(undefined)
+            return
+        }
+
+        const parsed = parseDate(masked)
+        const validationError = validateDate(parsed, normalizedMinDate, normalizedMaxDate)
+
+        if (validationError) {
+            updateError(validationError)
+        } else {
+            updateError(undefined)
+            lastValueTimestamp.current = parsed?.getTime()
+            onValueChange(parsed)
+        }
+    }
+
+    const handleCalendarSelect = (date: Date | undefined) => {
+        if (disabled) return
+
+        const normalized = date ? startOfDay(date) : undefined
+        setInputValue(formatDate(normalized))
+        updateError(undefined)
+        lastValueTimestamp.current = normalized?.getTime()
+        onValueChange(normalized)
+        setOpen(false)
     }
 
     const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -85,19 +127,12 @@ export function DatePicker({
         }
     }
 
-    const handleCalendarSelect = (date: Date | undefined) => {
-        setError(undefined)
-        onValueChange?.(date ? startOfDay(date) : undefined)
-        setOpen(false)
-        setInputValue('')
-    }
-
     return (
         <div className="flex flex-col gap-3">
             <div className={cn('relative', className)}>
                 <Input
                     id={id}
-                    value={displayValue}
+                    value={inputValue}
                     onChange={handleInputChange}
                     onKeyDown={handleKeyDown}
                     placeholder={placeholder}

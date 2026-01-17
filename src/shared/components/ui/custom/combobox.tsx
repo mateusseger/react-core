@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo } from 'react'
 import type { ReactNode } from 'react'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import {
@@ -25,7 +25,7 @@ export interface ComboboxOption {
 export interface ComboboxProps {
     id?: string
     value?: string
-    onValueChange?: (value: string | undefined) => void
+    onValueChange: (value: string | undefined) => void
     options?: ComboboxOption[]
     placeholder?: string
     searchPlaceholder?: string
@@ -72,39 +72,11 @@ export function Combobox({
         [options, value]
     )
 
-    const handleSelect = useCallback(
-        (optionValue: string) => {
-            const newValue = allowClear && optionValue === value ? undefined : optionValue
-            onValueChange?.(newValue)
-            setOpen(false)
-        },
-        [allowClear, value, onValueChange]
-    )
-
-    const renderCommandItem = useCallback(
-        (option: ComboboxOption, index: number) => (
-            <CommandItem
-                key={`${option.value}-${index}`}
-                value={option.value}
-                keywords={[option.label]}
-                onSelect={() => handleSelect(option.value)}
-                className="pr-8"
-            >
-                <span>
-                    {option.renderItem ? option.renderItem() : option.label}
-                </span>
-                <span className="absolute right-2 flex size-3.5 items-center justify-center">
-                    <Check
-                        className={cn(
-                            'size-4',
-                            value === option.value ? 'opacity-100' : 'opacity-0'
-                        )}
-                    />
-                </span>
-            </CommandItem>
-        ),
-        [handleSelect, value]
-    )
+    const handleSelect = (optionValue: string) => {
+        const newValue = allowClear && optionValue === value ? undefined : optionValue
+        onValueChange(newValue)
+        setOpen(false)
+    }
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
@@ -134,7 +106,27 @@ export function Combobox({
                         <CommandEmpty>{emptyMessage}</CommandEmpty>
                         {Object.entries(optionsByGroup).map(([group, groupOptions]) => (
                             <CommandGroup key={group} heading={group === '__default__' ? undefined : group}>
-                                {groupOptions.map((option, index) => renderCommandItem(option, index))}
+                                {groupOptions.map((option, index) => (
+                                    <CommandItem
+                                        key={`${option.value}-${index}`}
+                                        value={option.value}
+                                        keywords={[option.label]}
+                                        onSelect={() => handleSelect(option.value)}
+                                        className="pr-8"
+                                    >
+                                        <span>
+                                            {option.renderItem ? option.renderItem() : option.label}
+                                        </span>
+                                        <span className="absolute right-2 flex size-3.5 items-center justify-center">
+                                            <Check
+                                                className={cn(
+                                                    'size-4',
+                                                    value === option.value ? 'opacity-100' : 'opacity-0'
+                                                )}
+                                            />
+                                        </span>
+                                    </CommandItem>
+                                ))}
                             </CommandGroup>
                         ))}
                     </CommandList>
