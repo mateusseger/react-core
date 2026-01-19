@@ -93,9 +93,11 @@ export function Combobox({
                     )}
                     disabled={disabled}
                 >
-                    {selectedOption
-                        ? (selectedOption.renderItem?.() ?? selectedOption.label)
-                        : placeholder}
+                    <span className="overflow-hidden whitespace-nowrap">
+                        {selectedOption
+                            ? (selectedOption.renderItem?.() ?? selectedOption.label)
+                            : placeholder}
+                    </span>
                     <ChevronsUpDown className="text-muted-foreground size-4 shrink-0 opacity-50" />
                 </Button>
             </PopoverTrigger>
