@@ -32,6 +32,7 @@ export interface ComboboxProps {
     emptyMessage?: string
     allowClear?: boolean
     searchable?: boolean
+    modal?: boolean
     disabled?: boolean
     className?: string
 }
@@ -46,6 +47,7 @@ export function Combobox({
     emptyMessage = 'Nenhum resultado encontrado.',
     allowClear = true,
     searchable = true,
+    modal = false,
     disabled = false,
     className
 }: ComboboxProps) {
@@ -79,7 +81,7 @@ export function Combobox({
     }
 
     return (
-        <Popover open={open} onOpenChange={setOpen}>
+        <Popover open={open} onOpenChange={setOpen} modal={modal}>
             <PopoverTrigger asChild>
                 <Button
                     id={id}
