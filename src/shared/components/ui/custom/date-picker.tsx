@@ -55,8 +55,8 @@ export function DatePicker({
     minDate = DEFAULT_MIN_DATE,
     maxDate = DEFAULT_MAX_DATE,
     placeholder = 'DD/MM/AAAA',
-    autoFocus,
-    disabled,
+    autoFocus = false,
+    disabled = false,
     className
 }: DatePickerProps) {
     const [inputValue, setInputValue] = useState(() => formatDate(value))
