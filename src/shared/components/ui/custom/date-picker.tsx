@@ -25,6 +25,7 @@ export interface DatePickerProps {
     minDate?: Date
     maxDate?: Date
     placeholder?: string
+    autoFocus?: boolean
     disabled?: boolean
     className?: string
 }
@@ -54,6 +55,7 @@ export function DatePicker({
     minDate = DEFAULT_MIN_DATE,
     maxDate = DEFAULT_MAX_DATE,
     placeholder = 'DD/MM/AAAA',
+    autoFocus,
     disabled,
     className
 }: DatePickerProps) {
@@ -136,6 +138,7 @@ export function DatePicker({
                     onChange={handleInputChange}
                     onKeyDown={handleKeyDown}
                     placeholder={placeholder}
+                    autoFocus={autoFocus}
                     disabled={disabled}
                     className="pr-10"
                 />
