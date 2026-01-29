@@ -116,7 +116,7 @@ export function Combobox({
                                         value={option.value}
                                         keywords={[option.label]}
                                         onSelect={() => handleSelect(option.value)}
-                                        className="pr-8"
+                                        className="wrap-anywhere pr-8"
                                     >
                                         <span>
                                             {option.renderItem ? option.renderItem() : option.label}
