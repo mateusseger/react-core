@@ -25,7 +25,7 @@ import { cn } from "@/shared/utils/cn"
 import { useBreakpoint } from "@/shared/hooks"
 import type { MenuItem } from "@/shared/types/config"
 
-interface SidebarSubmenuProps {
+export interface SidebarSubmenuProps {
     parentItem: MenuItem | null
     currentPath: string
     onClose?: () => void
