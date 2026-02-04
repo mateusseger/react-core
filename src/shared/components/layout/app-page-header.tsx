@@ -34,7 +34,7 @@ export function AppPageHeader({ backButton, icon: Icon, avatar, title, descripti
                 </div>
             )}
             {avatar && (
-                <Avatar className="h-8 w-8 sm:h-9 sm:w-9 border">
+                <Avatar className="h-8 w-8 sm:h-9 sm:w-9">
                     <AvatarImage src={avatar.src} alt={avatar.alt} />
                     <AvatarFallback>{avatar.fallbackText}</AvatarFallback>
                 </Avatar>
