@@ -15,7 +15,7 @@ import {
 } from '@/shared/components/ui'
 import { cn } from '@/shared/utils'
 
-export interface ComboboxOption {
+export interface ComboboxOptionProps {
     value: string
     label: string
     group?: string
@@ -26,7 +26,7 @@ export interface ComboboxProps {
     id?: string
     value?: string
     onValueChange: (value: string | undefined) => void
-    options?: ComboboxOption[]
+    options?: ComboboxOptionProps[]
     placeholder?: string
     searchPlaceholder?: string
     emptyMessage?: string
@@ -64,7 +64,7 @@ export function Combobox({
                     acc[groupKey].push(option)
                     return acc
                 },
-                {} as Record<string, ComboboxOption[]>
+                {} as Record<string, ComboboxOptionProps[]>
             ),
         [options]
     )

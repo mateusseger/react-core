@@ -1,15 +1,22 @@
 import { ArrowLeft, type LucideIcon } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { Button } from '../ui'
+import { Avatar, AvatarFallback, AvatarImage, Button } from '../ui'
 
-interface AppPageHeaderProps {
+export interface AppPageHeaderAvatarProps {
+    src: string
+    alt: string
+    fallbackText: string
+}
+
+export interface AppPageHeaderProps {
     backButton?: boolean
     icon?: LucideIcon
+    avatar?: AppPageHeaderAvatarProps
     title: string
     description: string
 }
 
-export function AppPageHeader({ backButton, icon: Icon, title, description }: AppPageHeaderProps) {
+export function AppPageHeader({ backButton, icon: Icon, avatar, title, description }: AppPageHeaderProps) {
     const navigate = useNavigate()
 
     return (
@@ -25,6 +32,12 @@ export function AppPageHeader({ backButton, icon: Icon, title, description }: Ap
                 <div className="flex items-center justify-center">
                     <Icon className="text-primary" />
                 </div>
+            )}
+            {avatar && (
+                <Avatar className="h-8 w-8 sm:h-9 sm:w-9">
+                    <AvatarImage src={avatar.src} alt={avatar.alt} />
+                    <AvatarFallback>{avatar.fallbackText}</AvatarFallback>
+                </Avatar>
             )}
             <div className="flex-1 min-w-0">
                 <h1 className="font-bold text-2xl">{title}</h1>
