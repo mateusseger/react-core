@@ -21,18 +21,19 @@ export default defineConfig({
         },
         rollupOptions: {
             external: [
-                'react',
-                'react-dom',
-                'react-router-dom',
                 /^@radix-ui\/.*/,
                 'class-variance-authority',
                 'clsx',
                 'cmdk',
+                'date-fns',
                 'embla-carousel-react',
                 'framer-motion',
                 'lucide-react',
                 'oidc-client-ts',
+                'react',
                 'react-day-picker',
+                'react-dom',
+                'react-router-dom',
                 'sonner',
                 'tailwind-merge',
                 'vaul'
