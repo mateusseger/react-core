@@ -1,9 +1,12 @@
 import { createBrowserRouter, useRouteError } from "react-router-dom"
+
 import { authRoutes } from "../../src/features/auth"
 import { errorRoutes, ErrorFallback } from "../../src/features/errors"
 import { ProtectedRoute } from "../../src/features/auth"
 import { AppLayout } from "../../src/shared/components/layout"
+
 import { appConfig } from "./app-config"
+
 import { homeRoutes } from "../features/home"
 
 function RouteError() {

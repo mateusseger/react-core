@@ -18,7 +18,7 @@ export function useSidebarMenu(allMenuItems: MenuItem[]) {
         [menuItems, currentPath]
     )
 
-    useEffect(() => setOpenSubmenu(null), [currentPath])
+    useEffect(() => queueMicrotask(() => setOpenSubmenu(null)), [currentPath])
 
     const getItemState = useCallback(
         (item: MenuItem) => {

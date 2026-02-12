@@ -19,7 +19,9 @@ export function useBreakpoint(breakpoint: BreakpointKey, options?: UseBreakpoint
     const [isBelow, setIsBelow] = useState<boolean | undefined>(undefined)
     const onEnterRef = useRef(options?.onEnter)
 
-    onEnterRef.current = options?.onEnter
+    useEffect(() => {
+        onEnterRef.current = options?.onEnter
+    }, [options?.onEnter])
 
     useEffect(() => {
         const mql = window.matchMedia(`(max-width: ${value - 1}px)`)

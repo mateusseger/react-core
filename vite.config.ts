@@ -4,6 +4,7 @@ import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
 import { resolve } from 'path'
 
+// https://vite.dev/config/
 export default defineConfig({
     plugins: [react(), tailwindcss()],
     resolve: {
@@ -12,7 +13,6 @@ export default defineConfig({
         },
     },
     build: {
-        emptyOutDir: false,
         lib: {
             entry: resolve(__dirname, 'src/index.ts'),
             name: 'ReactCore',

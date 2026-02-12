@@ -18,26 +18,30 @@ export function AuthProvider({ children, config, devMode = false }: AuthProvider
     const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
-        initAuth(config, devMode)
+        const initializeAuth = async () => {
+            initAuth(config, devMode)
 
-        if (isPublicRoute(window.location.pathname)) {
-            setIsLoading(false)
-            return
-        }
+            if (isPublicRoute(window.location.pathname)) {
+                setIsLoading(false)
+                return
+            }
 
-        getUser()
-            .then((user) => {
+            try {
+                const user = await getUser()
                 if (user) {
                     setUser(user)
                 } else {
-                    return login()
+                    await login()
                 }
-            })
-            .catch((error) => {
+            } catch (error) {
                 console.error("Erro na verificação de sessão:", error)
                 setError("Não foi possível verificar sua sessão.")
-            })
-            .finally(() => setIsLoading(false))
+            } finally {
+                setIsLoading(false)
+            }
+        }
+
+        initializeAuth()
     }, [config, devMode])
 
     if (isLoading) {

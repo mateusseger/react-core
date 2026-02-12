@@ -1,6 +1,9 @@
 {
     "extends": "./tsconfig.app.json",
     "compilerOptions": {
+        "types": [
+            "vite/client"
+        ],
         "declaration": false,
         "declarationMap": false,
         "emitDeclarationOnly": false,

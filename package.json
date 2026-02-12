@@ -1,6 +1,6 @@
 {
     "name": "@herval/react-core",
-    "version": "4.3.2",
+    "version": "4.3.3",
     "description": "Biblioteca React Core com layout, UI, autenticação, temas e erros",
     "type": "module",
     "main": "./dist/index.cjs",
@@ -22,8 +22,8 @@
         "README.md"
     ],
     "scripts": {
+        "dev": "vite --port 3000 --open",
         "build": "tsc -p tsconfig.app.json && vite build",
-        "dev": "vite",
         "prepare": "pnpm run build"
     },
     "peerDependencies": {
